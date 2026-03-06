@@ -9,41 +9,41 @@ export const shorthands = undefined;
  * @returns {Promise<void> | void}
  */
 export const up = (pgm) => {
-    pgm.createTable('users', {
-        id: {
-            type: 'UUID',
-            primaryKey: true,
-            default: pgm.func('gen_random_uuid()'),
-        },
-        name: {
-            type: 'VARCHAR(100)',
-            notNull: true,
-        },
-        email: {
-            type: 'VARCHAR(100)',
-            notNull: true,
-            unique: true,
-        },
-        password: {
-            type: 'TEXT',
-            notNull: true,
-        },
-        role: {
-            type: 'VARCHAR',
-            notNull: true,
-            // note: 'owner' | 'tenant',
-        },
-        created_at: {
-            type: 'TIMESTAMP',
-            notNull: true,
-            default: pgm.func('now()'),
-        },
-        updated_at: {
-            type: 'TIMESTAMP',
-            notNull: true,
-            default: pgm.func('now()'),
-        },
-    });
+  pgm.createTable('users', {
+    id: {
+      type: 'UUID',
+      primaryKey: true,
+      default: pgm.func('gen_random_uuid()'),
+    },
+    name: {
+      type: 'VARCHAR(100)',
+      notNull: true,
+    },
+    email: {
+      type: 'VARCHAR(100)',
+      notNull: true,
+      unique: true,
+    },
+    password: {
+      type: 'TEXT',
+      notNull: true,
+    },
+    role: {
+      type: 'VARCHAR',
+      notNull: true,
+      // note: 'owner' | 'tenant',
+    },
+    created_at: {
+      type: 'TIMESTAMP',
+      notNull: true,
+      default: pgm.func('now()'),
+    },
+    updated_at: {
+      type: 'TIMESTAMP',
+      notNull: true,
+      default: pgm.func('now()'),
+    },
+  });
 };
 
 /**
@@ -52,5 +52,5 @@ export const up = (pgm) => {
  * @returns {Promise<void> | void}
  */
 export const down = (pgm) => {
-    pgm.dropTable('users');
+  pgm.dropTable('users');
 };

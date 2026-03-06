@@ -10,8 +10,8 @@
     "test:watch": "vitest --watch",
     "migrate": "node-pg-migrate",
     "migrate:test": "node-pg-migrate --envPath .test.env",
-    "lint": "eslint src",
-    "lint:fix": "eslint src --fix"
+    "lint": "eslint",
+    "lint:fix": "eslint --fix"
   },
   "keywords": [],
   "author": "",
@@ -26,6 +26,7 @@
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "eslint": "^10.0.2",
+    "eslint-plugin-import-x": "^4.16.1",
     "globals": "^17.4.0",
     "node-pg-migrate": "^8.0.4",
     "nodemon": "^3.1.14",

@@ -1,23 +1,30 @@
-import js from "@eslint/js";
-import globals from "globals";
-import { defineConfig } from "eslint/config";
+import js from '@eslint/js';
+import globals from 'globals';
+import { defineConfig } from 'eslint/config';
+import importX from 'eslint-plugin-import-x'
 
 
 export default defineConfig([
   {
-    files: ["**/*.{js,mjs,cjs}"], plugins: { js }, extends: ["js/recommended"], languageOptions: {
-      globals: globals.node,
-      ecmaVersion: "latest",
-      sourceType: "module",
+    files: ['**/*.{js,mjs,cjs}'],
+    plugins: {
+      js,
+      import: importX
     },
-     rules: {
+    extends: ['js/recommended'],
+    languageOptions: {
+      globals: globals.node,
+      ecmaVersion: 'latest',
+      sourceType: 'module',
+    },
+    rules: {
       // Konsistensi kode
       'no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
       'no-console': ['warn', { allow: ['warn', 'error'] }],
       'eqeqeq': ['error', 'always'],
 
       // Style
-      'semi': ['error', 'never'],
+      'semi': ['off'],
       'quotes': ['error', 'single'],
       'indent': ['error', 2],
 
@@ -42,5 +49,5 @@ export default defineConfig([
       'no-unused-vars': 'warn',
     },
   },
-  
+
 ]);

@@ -1,7 +1,7 @@
 import js from '@eslint/js';
 import globals from 'globals';
 import { defineConfig } from 'eslint/config';
-import importX from 'eslint-plugin-import-x'
+import importX from 'eslint-plugin-import-x';
 
 
 export default defineConfig([
@@ -24,7 +24,7 @@ export default defineConfig([
       'eqeqeq': ['error', 'always'],
 
       // Style
-      'semi': ['off'],
+      'semi': ['error', 'always'],
       'quotes': ['error', 'single'],
       'indent': ['error', 2],
 

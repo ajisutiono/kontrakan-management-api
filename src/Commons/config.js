@@ -19,6 +19,6 @@ const config = {
     password: process.env.PGPASSWORD,
     database: process.env.PGDATABASE,
   },
-}
+};
 
 export default config;

@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 import pool from '../src/Infrastructures/database/postgres/pool';
 
 const AuthenticationsTableTestHelper = {

@@ -1,9 +1,11 @@
 /* istanbul ignore file */
+import { randomUUID } from 'crypto';
+
 import pool from '../src/Infrastructures/database/postgres/pool';
 
 const UsersTableTestHelper = {
   async addUser({
-    id = 'user-123',
+    id = randomUUID(),
     name = 'Test User',
     email = 'test@example.com',
     password = 'hashed_password',
@@ -39,7 +41,7 @@ const UsersTableTestHelper = {
   },
 
   async cleanTable() {
-    await pool.query('TRUNCATE TABLE users');
+    await pool.query('TRUNCATE TABLE users CASCADE');
   },
 };
 

@@ -1,10 +1,10 @@
 import { describe, expect, it, vi } from 'vitest'
 
-import RegisteredUser from '../../../Domains/users/entities/RegisteredUser'
-import UserRepository from '../../../Domains/users/UserRepository'
-import PasswordHash from '../../security/PasswordHash'
-import PasswordValidator from '../../security/PasswordValidator'
-import AddUserUseCase from '../AddUserUseCase'
+import RegisteredUser from '../../../Domains/users/entities/RegisteredUser.js'
+import UserRepository from '../../../Domains/users/UserRepository.js'
+import PasswordHash from '../../security/PasswordHash.js'
+import PasswordValidator from '../../security/PasswordValidator.js'
+import AddUserUseCase from '../AddUserUseCase.js'
 
 describe('AddUserUseCase', () => {
   it('should orchestrating the add user correctly', async () => {

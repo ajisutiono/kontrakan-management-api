@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 
-import UserRepository from '../UserRepository'
+import UserRepository from '../UserRepository.js'
 
 describe('UserRepository abstract methods', () => {
   let repository

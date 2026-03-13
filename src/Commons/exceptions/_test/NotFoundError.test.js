@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import NotFoundError from '../NotFoundError'
+import NotFoundError from '../NotFoundError.js'
 
 describe('NotFoundError', () => {
   it('should create an not found error correctly', () => {

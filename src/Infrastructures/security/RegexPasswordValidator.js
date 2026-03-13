@@ -1,5 +1,5 @@
-import PasswordValidator from '../../Applications/security/PasswordValidator'
-import InvariantError from '../../Commons/exceptions/InvariantError'
+import PasswordValidator from '../../Applications/security/PasswordValidator.js'
+import InvariantError from '../../Commons/exceptions/InvariantError.js'
 
 class RegexPasswordValidator extends PasswordValidator {
   validate(password) {

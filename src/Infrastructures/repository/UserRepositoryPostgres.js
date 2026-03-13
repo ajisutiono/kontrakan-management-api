@@ -1,8 +1,8 @@
 import { randomUUID } from 'crypto'
 
-import UserRepository from '../../Domains/users/UserRepository'
-import InvariantError from '../../Commons/exceptions/InvariantError'
-import NotFoundError from '../../Commons/exceptions/NotFoundError'
+import UserRepository from '../../Domains/users/UserRepository.js'
+import InvariantError from '../../Commons/exceptions/InvariantError.js'
+import NotFoundError from '../../Commons/exceptions/NotFoundError.js'
 
 class UserRepositoryPostgres extends UserRepository {
   constructor({ pool, idGenerator = randomUUID }) {

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import PasswordHash from '../PasswordHash'
+import PasswordHash from '../PasswordHash.js'
 
 describe('PasswordHash interface', () => {
   it('should throw error when invoke abstract behavior', async() => {

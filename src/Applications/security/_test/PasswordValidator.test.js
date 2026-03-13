@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import PasswordValidator from '../PasswordValidator'
+import PasswordValidator from '../PasswordValidator.js'
 
 describe('PasswordValidator interface', () => {
   it('should throw error when invoke abstract behavior', () => {

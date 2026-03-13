@@ -1,8 +1,8 @@
 import bcrypt from 'bcrypt'
 import { describe, expect, it, vi } from 'vitest'
 
-import AuthenticationError from '../../../Commons/exceptions/AuthenticationError'
-import BcryptPasswordHash from '../BcryptPasswordHash'
+import AuthenticationError from '../../../Commons/exceptions/AuthenticationError.js'
+import BcryptPasswordHash from '../BcryptPasswordHash.js'
 
 describe('BcryptPasswordHash', () => {
   describe('hash function', () => {

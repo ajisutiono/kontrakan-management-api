@@ -1,7 +1,7 @@
 /* istanbul ignore file */
 import { randomUUID } from 'crypto'
 
-import pool from '../src/Infrastructures/database/postgres/pool'
+import pool from '../src/Infrastructures/database/postgres/pool.js'
 
 const UsersTableTestHelper = {
   async addUser({

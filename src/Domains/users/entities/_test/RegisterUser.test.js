@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import RegisterUser from '../RegisterUser'
+import RegisterUser from '../RegisterUser.js'
 
 describe('RegisterUser entity', () => {
   it('throws when any required property is missing', () => {

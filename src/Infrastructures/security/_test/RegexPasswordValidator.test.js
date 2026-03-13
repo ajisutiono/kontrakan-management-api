@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 
-import InvariantError from '../../../Commons/exceptions/InvariantError'
-import RegexPasswordValidator from '../RegexPasswordValidator'
+import InvariantError from '../../../Commons/exceptions/InvariantError.js'
+import RegexPasswordValidator from '../RegexPasswordValidator.js'
 
 describe('RegexPasswordValidator', () => {
   let regexPasswordValidator

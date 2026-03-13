@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import AuthenticationError from '../AuthenticationError'
+import AuthenticationError from '../AuthenticationError.js'
 
 describe('AuthenticationError', () => {
   it('should create an authentication error correctly', () => {

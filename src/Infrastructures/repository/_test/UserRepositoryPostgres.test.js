@@ -2,11 +2,11 @@ import { randomUUID } from 'crypto'
 
 import { afterAll, afterEach, describe, expect, it, vi } from 'vitest'
 
-import UsersTableTestHelper from '../../../../tests/UsersTableTestHelper'
-import pool from '../../database/postgres/pool'
-import UserRepositoryPostgres from '../UserRepositoryPostgres'
-import InvariantError from '../../../Commons/exceptions/InvariantError'
-import NotFoundError from '../../../Commons/exceptions/NotFoundError'
+import UsersTableTestHelper from '../../../../tests/UsersTableTestHelper.js'
+import pool from '../../database/postgres/pool.js'
+import UserRepositoryPostgres from '../UserRepositoryPostgres.js'
+import InvariantError from '../../../Commons/exceptions/InvariantError.js'
+import NotFoundError from '../../../Commons/exceptions/NotFoundError.js'
 
 describe('UserRepositoryPostgres', () => {
   afterEach(async () => {

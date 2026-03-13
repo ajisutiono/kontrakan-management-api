@@ -1,5 +1,5 @@
-import PasswordHash from '../../Applications/security/PasswordHash'
-import AuthenticationError from '../../Commons/exceptions/AuthenticationError'
+import PasswordHash from '../../Applications/security/PasswordHash.js'
+import AuthenticationError from '../../Commons/exceptions/AuthenticationError.js'
 
 class BcryptPasswordHash extends PasswordHash {
   constructor({ bcrypt, saltRound = 10 }) {

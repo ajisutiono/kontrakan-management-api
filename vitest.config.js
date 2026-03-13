@@ -9,7 +9,7 @@ export default defineConfig({
       exclude: [
         'src/**/_test/*.js',
         'src/Commons/config.js',
-        'src/Infrastructures/**/*.js',
+        // 'src/Infrastructures/**/*.js',
       ],
     },
   },

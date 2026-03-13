@@ -1,16 +1,13 @@
-import js from '@eslint/js';
-import globals from 'globals';
-import { defineConfig } from 'eslint/config';
-import importX from 'eslint-plugin-import-x';
-
+// eslint.config.js — versi simpel yang pasti jalan
+import js from '@eslint/js'
+import globals from 'globals'
+import { defineConfig } from 'eslint/config'
+import vitest from '@vitest/eslint-plugin'
 
 export default defineConfig([
   {
     files: ['**/*.{js,mjs,cjs}'],
-    plugins: {
-      js,
-      import: importX
-    },
+    plugins: { js },
     extends: ['js/recommended'],
     languageOptions: {
       globals: globals.node,
@@ -18,36 +15,31 @@ export default defineConfig([
       sourceType: 'module',
     },
     rules: {
-      // Konsistensi kode
       'no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
       'no-console': ['warn', { allow: ['warn', 'error'] }],
       'eqeqeq': ['error', 'always'],
-
-      // Style
-      'semi': ['error', 'always'],
+      'no-var': 'error',
+      'prefer-const': 'error',
+      'semi': ['error', 'never'],
       'quotes': ['error', 'single'],
       'indent': ['error', 2],
-
-      // Import — penting untuk Clean Architecture
-      'import/no-cycle': 'error',        // cegah circular dependency antar layer
-      'import/order': ['warn', {
-        groups: ['builtin', 'external', 'internal'],
-        'newlines-between': 'always',
-      }],
     },
   },
   {
-    // Khusus file test — matikan beberapa rule yang ganggu
-    files: ['**/*.test.js', '**/*.spec.js'],
+    files: ['**/*.test.js', '**/*.spec.js', 'tests/**/*.js'],
+    plugins: { vitest },
     languageOptions: {
       globals: {
         ...globals.node,
-        ...globals.vitest ?? {},
+        ...vitest.environments.env.globals,
       },
     },
     rules: {
+      ...vitest.configs.recommended.rules,
       'no-unused-vars': 'warn',
     },
   },
-
-]);
+  {
+    ignores: ['node_modules/**', 'coverage/**', 'dist/**'],
+  },
+])

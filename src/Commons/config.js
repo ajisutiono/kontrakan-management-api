@@ -1,14 +1,14 @@
 /* istanbul ignore file */
-import path from 'path';
+import path from 'path'
 
-import dotenv from 'dotenv';
+import dotenv from 'dotenv'
 
 if (process.env.NODE_ENV === 'test') {
   dotenv.config({
     path: path.resolve(process.cwd(), '.test.env'),
-  });
+  })
 } else {
-  dotenv.config();
+  dotenv.config()
 }
 
 const config = {
@@ -19,6 +19,6 @@ const config = {
     password: process.env.PGPASSWORD,
     database: process.env.PGDATABASE,
   },
-};
+}
 
-export default config;
+export default config

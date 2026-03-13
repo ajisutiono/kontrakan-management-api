@@ -21,8 +21,8 @@ container.register({
   userRepository: asClass(UserRepositoryPostgres).singleton(),
 
   // Security
-  bcryptPasswordHash: asClass(BcryptPasswordHash).singleton(),
-  regexPasswordValidator: asClass(RegexPasswordValidator).singleton(),
+  passwordHash: asClass(BcryptPasswordHash).singleton(),
+  passwordValidator: asClass(RegexPasswordValidator).singleton(),
 
   // Use cases
   addUserUseCase: asClass(AddUserUseCase).singleton(),

@@ -5,7 +5,7 @@ import InvariantError from '../../Commons/exceptions/InvariantError'
 import NotFoundError from '../../Commons/exceptions/NotFoundError'
 
 class UserRepositoryPostgres extends UserRepository {
-  constructor(pool, idGenerator = randomUUID) {
+  constructor({ pool, idGenerator = randomUUID }) {
     super()
     this._pool = pool
     this._idGenerator = idGenerator

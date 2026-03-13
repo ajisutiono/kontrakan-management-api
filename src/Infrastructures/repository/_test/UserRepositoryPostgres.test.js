@@ -19,14 +19,15 @@ describe('UserRepositoryPostgres', () => {
 
   describe('verifyAvailableEmail function', () => {
     it('should not throw when email available', async () => {
-      const userRepositoryPostgres = new UserRepositoryPostgres(pool, {})
+      const userRepositoryPostgres = new UserRepositoryPostgres({pool})
 
-      await expect(userRepositoryPostgres.verifyAvailableEmail('test@example.com')).resolves.not.toThrow()
+      await expect(userRepositoryPostgres.verifyAvailableEmail('test2@example.com'))
+        .resolves.not.toThrow()
     })
 
     it('should throw InvariantError when email already exists', async () => {
-      await UsersTableTestHelper.addUser({ email: 'test@example.com' }) // test@example.com sudah ada di database menggunakan UsersTableTestHelper
-      const userRepositoryPostgres = new UserRepositoryPostgres(pool)
+      await UsersTableTestHelper.addUser({ email: 'test@example.com' })
+      const userRepositoryPostgres = new UserRepositoryPostgres({pool})
 
       await expect(
         userRepositoryPostgres.verifyAvailableEmail('test@example.com')
@@ -51,7 +52,7 @@ describe('UserRepositoryPostgres', () => {
 
       const mockIdGenerator = vi.fn().mockReturnValue(fakeId)
 
-      const userRepositoryPostgres = new UserRepositoryPostgres(pool, mockIdGenerator)
+      const userRepositoryPostgres = new UserRepositoryPostgres({pool, idGenerator: mockIdGenerator})
 
       const registeredUser = await userRepositoryPostgres.addUser(registerUser)
 
@@ -74,7 +75,7 @@ describe('UserRepositoryPostgres', () => {
 
       await UsersTableTestHelper.addUser({ id: fakeId })
 
-      const userRepositoryPostgres = new UserRepositoryPostgres(pool)
+      const userRepositoryPostgres = new UserRepositoryPostgres({pool})
 
       const user = await userRepositoryPostgres.findUserById(fakeId)
 
@@ -83,7 +84,7 @@ describe('UserRepositoryPostgres', () => {
 
     it('should throw NotFoundError when id not found', async() => {
       const fakeId = randomUUID()
-      const userRepositoryPostgres = new UserRepositoryPostgres(pool)
+      const userRepositoryPostgres = new UserRepositoryPostgres({pool})
 
       const user = userRepositoryPostgres.findUserById(fakeId)
 
@@ -96,7 +97,7 @@ describe('UserRepositoryPostgres', () => {
     it('should return user when email exists', async() => {
       await UsersTableTestHelper.addUser({ email: 'testing@mail.com' })
 
-      const userRepositoryPostgres = new UserRepositoryPostgres(pool)
+      const userRepositoryPostgres = new UserRepositoryPostgres({pool})
 
       const user = await userRepositoryPostgres.findUserByEmail('testing@mail.com')
 
@@ -104,7 +105,7 @@ describe('UserRepositoryPostgres', () => {
     })
 
     it('should throw NotFoundError when email not found', async() => {
-      const userRepositoryPostgres = new UserRepositoryPostgres(pool)
+      const userRepositoryPostgres = new UserRepositoryPostgres({pool})
 
       const user = userRepositoryPostgres.findUserByEmail('notfound@mail.com')
 

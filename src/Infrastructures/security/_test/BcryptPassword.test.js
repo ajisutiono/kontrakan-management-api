@@ -9,7 +9,7 @@ describe('BcryptPasswordHash', () => {
     it('should hash password correctly', async() => {
       const spyHash = vi.spyOn(bcrypt, 'hash')
 
-      const bcryptPasswordHash = new BcryptPasswordHash(bcrypt)
+      const bcryptPasswordHash = new BcryptPasswordHash({bcrypt})
 
       const hashedPassword = await bcryptPasswordHash.hash('plain_password')
 
@@ -21,7 +21,7 @@ describe('BcryptPasswordHash', () => {
     it('should use custom saltRound when provided', async() => {
       const spyHash = vi.spyOn(bcrypt, 'hash')
 
-      const bcryptPasswordHash = new BcryptPasswordHash(bcrypt, 12)
+      const bcryptPasswordHash = new BcryptPasswordHash({ bcrypt, saltRound: 12 })
 
       await bcryptPasswordHash.hash('plain_password')
 
@@ -31,7 +31,7 @@ describe('BcryptPasswordHash', () => {
 
   describe('comparePassword function', () => {
     it('should not throw when password matches', async() => {
-      const bcryptPasswordHash = new BcryptPasswordHash(bcrypt)
+      const bcryptPasswordHash = new BcryptPasswordHash({bcrypt})
 
       const hashedPassword = await bcrypt.hash('plain_password', 10)
 
@@ -40,7 +40,7 @@ describe('BcryptPasswordHash', () => {
     })
 
     it('should throw AuthenticationError when passowrd does not match', async() => {
-      const bcryptPasswordHash = new BcryptPasswordHash(bcrypt)
+      const bcryptPasswordHash = new BcryptPasswordHash({bcrypt})
 
       const hashedPassword = await bcrypt.hash('plain_password', 10)
 

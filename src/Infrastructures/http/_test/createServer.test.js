@@ -18,6 +18,17 @@ describe('HTTP server', () => {
   })
 
   describe('when POST /api/users', () => {
+    // if there is a route that is not registered throw 404
+    it('should response 404 when route not found', async () => {
+      const response = await request(server)
+        .get('/api/endpoint-tidak-ada')
+
+      expect(response.status).toBe(404)
+      expect(response.body.status).toBe('fail')
+      expect(response.body.message).toBe('resource tidak ditemukan')
+    })
+
+
     it('should response 201 and persisted user', async() => {
       // Arrange
       const requestPayload = {

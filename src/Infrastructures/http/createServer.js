@@ -10,6 +10,14 @@ const createServer = (container) => {
 
   app.use(express.json())
   app.use('/api', createRouter(container))
+  
+  // if there is a route that is not registered
+  app.use((req, res) => {
+    res.status(404).json({
+      status: 'fail',
+      message: 'resource tidak ditemukan',
+    })
+  })
 
   // eslint-disable-next-line no-unused-vars
   app.use((error, req, res, next) => {

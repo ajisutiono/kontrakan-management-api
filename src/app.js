@@ -1,9 +1,8 @@
 import createServer from './Infrastructures/http/createServer.js'
-
-const PORT = process.env.PORT || 3000
+import config from './Commons/config.js'
 
 const app = createServer()
 
-app.listen(PORT, () => {
-  console.warn(`Server berjalan di port ${PORT}`)
+app.listen(config.server.port, config.server.host, () => {
+  console.warn(`Server berjalan di ${config.server.host}:${config.server.port}`)
 })

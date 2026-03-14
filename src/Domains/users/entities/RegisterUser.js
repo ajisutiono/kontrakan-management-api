@@ -23,8 +23,16 @@ class RegisterUser {
       throw new Error('REGISTER_USER.NOT_MEET_DATA_TYPE_SPECIFICATION')
     }
 
-    if (name.length > 100 || email.length > 100 || password.length < 8) {
-      throw new Error('REGISTER_USER.NOT_MEET_DATA_LENGTH_REQUIREMENT')
+    if (name.length > 100) {
+      throw new Error('REGISTER_USER.NAME_TOO_LONG')
+    }
+
+    if (email.length > 100) {
+      throw new Error('REGISTER_USER.EMAIL_TOO_LONG')
+    }
+
+    if (password.length < 8) {
+      throw new Error('REGISTER_USER.PASSWORD_BELOW_MINIMUM_LENGTH')
     }
 
     if (!email.includes('@')) {

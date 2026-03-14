@@ -27,15 +27,27 @@ describe('RegisterUser entity', () => {
     )
   })
 
-  it('throws when name or email exceeds maximum length', () => {
+  it('throws when name exceeds maximum length', () => {
     const payload = {
       name: 'a'.repeat(101),
+      email: 'test@example.com',
+      password: 'securePass1',
+      role: 'tenant',
+    }
+    expect(() => new RegisterUser(payload)).toThrowError(
+      'REGISTER_USER.NAME_TOO_LONG',
+    )
+  })
+
+  it('throws when email exceeds maximum length', () => {
+    const payload = {
+      name: 'Jane',
       email: 'a'.repeat(101) + '@example.com',
       password: 'securePass1',
       role: 'tenant',
     }
     expect(() => new RegisterUser(payload)).toThrowError(
-      'REGISTER_USER.NOT_MEET_DATA_LENGTH_REQUIREMENT',
+      'REGISTER_USER.EMAIL_TOO_LONG',
     )
   })
 
@@ -47,7 +59,7 @@ describe('RegisterUser entity', () => {
       role: 'tenant',
     }
     expect(() => new RegisterUser(payload)).toThrowError(
-      'REGISTER_USER.NOT_MEET_DATA_LENGTH_REQUIREMENT',
+      'REGISTER_USER.PASSWORD_BELOW_MINIMUM_LENGTH',
     )
   })
 

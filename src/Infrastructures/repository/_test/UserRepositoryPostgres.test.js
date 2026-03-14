@@ -31,7 +31,7 @@ describe('UserRepositoryPostgres', () => {
 
       await expect(
         userRepositoryPostgres.verifyAvailableEmail('test@example.com')
-      ).rejects.toThrowError('USER_REPOSITORY.EMAIL_ALREADY_EXISTS')
+      ).rejects.toThrowError('email yang anda daftarkan sudah ada')
 
       await expect(
         userRepositoryPostgres.verifyAvailableEmail('test@example.com')
@@ -88,7 +88,7 @@ describe('UserRepositoryPostgres', () => {
 
       const user = userRepositoryPostgres.findUserById(fakeId)
 
-      await expect(user).rejects.toThrowError('USER_REPOSITORY.USER_NOT_FOUND')
+      await expect(user).rejects.toThrowError('user tidak ditemukan')
       await expect(user).rejects.toBeInstanceOf(NotFoundError)
     })
   })
@@ -109,7 +109,7 @@ describe('UserRepositoryPostgres', () => {
 
       const user = userRepositoryPostgres.findUserByEmail('notfound@mail.com')
 
-      await expect(user).rejects.toThrowError('USER_REPOSITORY.EMAIL_NOT_FOUND')
+      await expect(user).rejects.toThrowError('email user tidak ditemukan')
       await expect(user).rejects.toBeInstanceOf(NotFoundError)
     })
   })

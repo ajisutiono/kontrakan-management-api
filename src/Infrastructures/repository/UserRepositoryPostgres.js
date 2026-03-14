@@ -33,7 +33,7 @@ class UserRepositoryPostgres extends UserRepository {
     const result = await this._pool.query(query)
 
     if (result.rowCount) {
-      throw new InvariantError('USER_REPOSITORY.EMAIL_ALREADY_EXISTS')
+      throw new InvariantError('email yang anda daftarkan sudah ada')
     }
   }
 
@@ -46,7 +46,7 @@ class UserRepositoryPostgres extends UserRepository {
     const result = await this._pool.query(query)
 
     if (!result.rowCount) {
-      throw new NotFoundError('USER_REPOSITORY.USER_NOT_FOUND')
+      throw new NotFoundError('user tidak ditemukan')
     }
 
     return result.rows[0]
@@ -61,7 +61,7 @@ class UserRepositoryPostgres extends UserRepository {
     const result = await this._pool.query(query)
 
     if (!result.rowCount) {
-      throw new NotFoundError('USER_REPOSITORY.EMAIL_NOT_FOUND')
+      throw new NotFoundError('email user tidak ditemukan')
     }
 
     return result.rows[0]

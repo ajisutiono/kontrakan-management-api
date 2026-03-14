@@ -1,3 +1,5 @@
+import DomainError from '../../../exceptions/DomainError.js'
+
 class RegisteredUser {
   constructor(payload) {
     this._validatePayload(payload)
@@ -10,7 +12,7 @@ class RegisteredUser {
 
   _validatePayload({ id, name, role }) {
     if (!id || !name || !role) {
-      throw new Error('REGISTERED_USER.NOT_CONTAIN_NEEDED_PROPERTY')
+      throw new DomainError('REGISTERED_USER.NOT_CONTAIN_NEEDED_PROPERTY')
     }
 
     if (
@@ -18,7 +20,7 @@ class RegisteredUser {
       typeof name !== 'string' ||
       typeof role !== 'string'
     ) {
-      throw new Error('REGISTERED_USER.NOT_MEET_DATA_TYPE_SPECIFICATION')
+      throw new DomainError('REGISTERED_USER.NOT_MEET_DATA_TYPE_SPECIFICATION')
     }
 
     if (!['owner', 'tenant'].includes(role)) {

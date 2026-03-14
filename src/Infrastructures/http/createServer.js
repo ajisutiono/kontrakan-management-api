@@ -1,12 +1,11 @@
 import express from 'express'
 
-import container from '../container.js'
 import createRouter from '../../Interfaces/http/api/index.js'
 import ClientError from '../../Commons/exceptions/ClientError.js'
 import DomainErrorTranslator from '../../Commons/exceptions/DomainErrorTranslator.js'
 
 
-const createServer = () => {
+const createServer = (container) => {
   const app = express()
 
   app.use(express.json())

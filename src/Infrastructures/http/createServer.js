@@ -14,7 +14,6 @@ const createServer = () => {
   // eslint-disable-next-line no-unused-vars
   app.use((error, req, res, next) => {
     // domain error
-    // Error dari Domain — validasi bisnis gagal
     if (error instanceof DomainError) {
       return res.status(400).json({
         status: 'fail',

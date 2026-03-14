@@ -31,7 +31,7 @@ describe('UserRepositoryPostgres', () => {
 
       await expect(
         userRepositoryPostgres.verifyAvailableEmail('test@example.com')
-      ).rejects.toThrowError('email yang anda daftarkan sudah ada')
+      ).rejects.toThrowError('tidak dapat membuat user baru karena email sudah ada')
 
       await expect(
         userRepositoryPostgres.verifyAvailableEmail('test@example.com')

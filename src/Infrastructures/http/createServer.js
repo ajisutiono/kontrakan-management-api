@@ -3,7 +3,7 @@ import express from 'express'
 import container from '../container.js'
 import createRouter from '../../Interfaces/http/api/index.js'
 import ClientError from '../../Commons/exceptions/ClientError.js'
-import DomainError from '../../Commons/exceptions/DomainError.js'
+import DomainErrorTranslator from '../../Commons/exceptions/DomainErrorTranslator.js'
 
 
 const createServer = () => {
@@ -15,16 +15,12 @@ const createServer = () => {
   // eslint-disable-next-line no-unused-vars
   app.use((error, req, res, next) => {
     // domain error
-    if (error instanceof DomainError) {
-      return res.status(400).json({
+    const translatedError = DomainErrorTranslator.translate(error)
+
+    if (translatedError instanceof ClientError) {
+      return res.status(translatedError.statusCode).json({
         status: 'fail',
-        message: error.message,
-      })
-    }
-    if(error instanceof ClientError) {
-      return res.status(error.statusCode).json({
-        status: 'fail',
-        message: error.message,
+        message: translatedError.message,
       })
     }
 

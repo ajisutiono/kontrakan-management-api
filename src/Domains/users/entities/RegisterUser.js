@@ -1,4 +1,4 @@
-import DomainError from '../../../exceptions/DomainError.js'
+import DomainError from '../../../Commons/exceptions/DomainError.js'
 
 class RegisterUser {
   constructor(payload) {

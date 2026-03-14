@@ -3,7 +3,8 @@ import express from 'express'
 import container from '../container.js'
 import createRouter from '../../Interfaces/http/api/index.js'
 import ClientError from '../../Commons/exceptions/ClientError.js'
-import DomainError from '../../Domains/exceptions/DomainError.js'
+import DomainError from '../../Commons/exceptions/DomainError.js'
+
 
 const createServer = () => {
   const app = express()

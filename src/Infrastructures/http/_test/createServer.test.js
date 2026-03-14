@@ -17,28 +17,6 @@ describe('HTTP server', () => {
     await UsersTableTestHelper.cleanTable()
   })
 
-  /*
-  Scenarios test 400:
-  1. REGISTER_USER.NOT_CONTAIN_NEEDED_PROPERTY ✅
-     message: tidak dapat membuat user baru karena properti yang dibutuhkan tidak ada
-  2. REGISTER_USER.NOT_MEET_DATA_TYPE_SPECIFICATION ✅
-     message: tidak dapat membuat user baru karena tipe data tidak sesuai
-  3. REGISTER_USER.NAME_TOO_LONG ✅
-     message: tidak dapat membuat user baru karena nama terlalu panjang
-  4.REGISTER_USER.EMAIL_TOO_LONG ✅
-     message: tidak dapat membuat user baru karena email terlalu panjang
-  5.REGISTER_USER.PASSWORD_BELOW_MINIMUM_LENGTH ✅
-     message: tidak dapat membuat user baru karena password terlalu pendek
-
-  6. REGISTER_USER.INVALID_EMAIL  ✅
-     message: tidak dapat membuat user baru karena format email tidak valid
-  7. REGISTER_USER.INVALID_ROLE ✅
-     message:tidak dapat membuat user baru karena role tidak valid
-  8. REGISTER_USER.NAME_CONTAIN_RESTRICTED_CHARACTER ✅
-     message: tidak dapat membuat user baru karena nama mengandung karakter terlarang
-
-  */
-
   describe('when POST /api/users', () => {
     it('should response 201 and persisted user', async() => {
       // Arrange
@@ -63,6 +41,29 @@ describe('HTTP server', () => {
       expect(response.body.data.registeredUser.role).toBe('owner')
     })
     
+
+    /*
+  Scenarios test 400:
+  1. REGISTER_USER.NOT_CONTAIN_NEEDED_PROPERTY ✅
+     message: tidak dapat membuat user baru karena properti yang dibutuhkan tidak ada
+  2. REGISTER_USER.NOT_MEET_DATA_TYPE_SPECIFICATION ✅
+     message: tidak dapat membuat user baru karena tipe data tidak sesuai
+  3. REGISTER_USER.NAME_TOO_LONG ✅
+     message: tidak dapat membuat user baru karena nama terlalu panjang
+  4.REGISTER_USER.EMAIL_TOO_LONG ✅
+     message: tidak dapat membuat user baru karena email terlalu panjang
+  5.REGISTER_USER.PASSWORD_BELOW_MINIMUM_LENGTH ✅
+     message: tidak dapat membuat user baru karena password terlalu pendek
+
+  6. REGISTER_USER.INVALID_EMAIL  ✅
+     message: tidak dapat membuat user baru karena format email tidak valid
+  7. REGISTER_USER.INVALID_ROLE ✅
+     message:tidak dapat membuat user baru karena role tidak valid
+  8. REGISTER_USER.NAME_CONTAIN_RESTRICTED_CHARACTER ✅
+     message: tidak dapat membuat user baru karena nama mengandung karakter terlarang
+  9. Email already exists in database ✅
+
+  */  
     it('should response 400 when email already exists', async() => {
       await UsersTableTestHelper.addUser({ email: 'testing@example.com'})
 
@@ -225,6 +226,9 @@ describe('HTTP server', () => {
       expect(response.body.message).toBe('tidak dapat membuat user baru karena role tidak valid')
     })
 
+    /*
+    scenarios 500 error
+    */
     it('should response 500 when unhandled error occurs', async () => {
       const requestPayload = {
         name: 'Test User',
@@ -233,8 +237,6 @@ describe('HTTP server', () => {
         role: 'owner',
       }
 
-      // Buat server baru dengan container yang di-mock
-      // supaya throw error tidak terduga
       const errorServer = createServer({
         resolve: () => {
           throw new Error('Unexpected error')

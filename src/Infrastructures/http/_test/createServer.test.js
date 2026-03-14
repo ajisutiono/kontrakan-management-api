@@ -39,7 +39,7 @@ describe('HTTP server', () => {
       expect(response.body.data.registeredUser.name).toBe('Test User')
       expect(response.body.data.registeredUser.role).toBe('owner')
     })
-
+    
     it('should response 400 when email already exists', async() => {
       await UsersTableTestHelper.addUser({ email: 'testing@example.com'})
 

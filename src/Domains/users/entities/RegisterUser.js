@@ -1,5 +1,3 @@
-import DomainError from '../../../Commons/exceptions/DomainError.js'
-
 class RegisterUser {
   constructor(payload) {
     this._validatePayload(payload)
@@ -13,7 +11,7 @@ class RegisterUser {
 
   _validatePayload({ name, email, password, role }) {
     if (!name || !email || !password || !role) {
-      throw new DomainError('REGISTER_USER.NOT_CONTAIN_NEEDED_PROPERTY')
+      throw new Error('REGISTER_USER.NOT_CONTAIN_NEEDED_PROPERTY')
     }
 
     if (
@@ -22,23 +20,23 @@ class RegisterUser {
             typeof password !== 'string' ||
             typeof role !== 'string'
     ) {
-      throw new DomainError('REGISTER_USER.NOT_MEET_DATA_TYPE_SPECIFICATION')
+      throw new Error('REGISTER_USER.NOT_MEET_DATA_TYPE_SPECIFICATION')
     }
 
     if (name.length > 100 || email.length > 100 || password.length < 8) {
-      throw new DomainError('REGISTER_USER.NOT_MEET_DATA_LENGTH_REQUIREMENT')
+      throw new Error('REGISTER_USER.NOT_MEET_DATA_LENGTH_REQUIREMENT')
     }
 
     if (!email.includes('@')) {
-      throw new DomainError('REGISTER_USER.INVALID_EMAIL')
+      throw new Error('REGISTER_USER.INVALID_EMAIL')
     }
 
     if (!['owner', 'tenant'].includes(role)) {
-      throw new DomainError('REGISTER_USER.INVALID_ROLE')
+      throw new Error('REGISTER_USER.INVALID_ROLE')
     }
 
     if (!name.match(/^[\w\s'.-]+$/)) {
-      throw new DomainError('REGISTER_USER.NAME_CONTAIN_RESTRICTED_CHARACTER')
+      throw new Error('REGISTER_USER.NAME_CONTAIN_RESTRICTED_CHARACTER')
     }
   }
 }

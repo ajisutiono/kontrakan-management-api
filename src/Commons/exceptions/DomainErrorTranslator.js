@@ -21,6 +21,11 @@ const DomainErrorTranslator = {
     case 'REGISTER_USER.NAME_CONTAIN_RESTRICTED_CHARACTER':
       return new InvariantError('tidak dapat membuat user baru karena nama mengandung karakter terlarang')
 
+    // LoginUser errors
+    case 'LOGIN_USER.NOT_CONTAIN_NEEDED_PROPERTY':
+      return new InvariantError('harus memasukkan email dan password')
+    case 'LOGIN_USER.NOT_MEET_DATA_TYPE_SPECIFICATION':
+      return new InvariantError('email dan password harus string')
     default:
       return error
     }

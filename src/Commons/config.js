@@ -39,6 +39,11 @@ const config = {
     password: process.env.PGPASSWORD,
     database: process.env.PGDATABASE,
   },
+  token: {                                         
+    accessTokenKey: process.env.ACCESS_TOKEN_KEY,
+    refreshTokenKey: process.env.REFRESH_TOKEN_KEY,
+    accessTokenAge: Number(process.env.ACCESS_TOKEN_AGE),
+  },
 }
 
 export default config

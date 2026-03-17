@@ -18,7 +18,7 @@ class JwtTokenManager extends TokenManager {
 
   async verifyRefreshToken(token) {
     try {
-      this._jwt.verify(token, config.token.accessTokenAge)
+      this._jwt.verify(token, config.token.refreshTokenKey)
     // eslint-disable-next-line no-unused-vars
     } catch (error) {
       throw new InvariantError('refresh token tidak valid')

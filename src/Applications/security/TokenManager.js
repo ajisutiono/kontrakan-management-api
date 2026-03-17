@@ -16,3 +16,5 @@ class TokenManager {
     throw new Error('TOKEN_MANAGER.METHOD_NOT_IMPLEMENTED')
   }
 }
+
+export default TokenManager

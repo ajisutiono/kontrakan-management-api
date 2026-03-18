@@ -3,7 +3,16 @@ import { describe, expect, it } from 'vitest'
 import NewAuthentication from '../NewAuthentication.js'
 
 describe('NewAuthentication entities', () => {
-  it('should throw error when payload not contain needed property', () => {
+  it('should throw error accessToken missing', () => {
+    const payload = {
+      // accessToken missing
+      refreshToken: 'refresh_token',
+    }
+
+    expect(() => new NewAuthentication(payload)).toThrowError('NEW_AUTHENTICATION.NOT_CONTAIN_NEEDED_PROPERTY')
+  })
+
+  it('should throw error refreshToken missing', () => {
     const payload = {
       accessToken: 'access_token',
       // missing refreshToken
@@ -14,7 +23,7 @@ describe('NewAuthentication entities', () => {
 
   it('should throw error when payload not needed data type specification', () => {
     const payload = {
-      accessToken: 'access_token',
+      accessToken: true,
       refreshToken: 12345,
     }
 

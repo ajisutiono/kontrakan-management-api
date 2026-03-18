@@ -135,7 +135,29 @@ describe('UserRepositoryPostgres', () => {
         .rejects.toThrowError('password user tidak ditemukan')
       await expect(userRepositoryPostgres.getPasswordByEmail('notFoundEmail@mail.com'))
         .rejects.toBeInstanceOf(NotFoundError)
+    })
+  })
 
+  describe('getIdByEmail', () => {
+    it('should return user when email found', async() => {
+      const fakeId = randomUUID()
+
+      await UsersTableTestHelper.addUser({id: fakeId, email: 'testing@mail.com'})
+
+      const userRepositoryPostgres = new UserRepositoryPostgres({pool})
+
+      const id = await userRepositoryPostgres.getIdByEmail('testing@mail.com')
+
+      expect(id).toBe(fakeId)
+    })
+
+    it('should throw NotFoundError when email not found', async() => {
+      const userRepositoryPostgres = new UserRepositoryPostgres({pool})
+
+      await expect(userRepositoryPostgres.getIdByEmail('notfoundemail@mail.com'))
+        .rejects.toThrowError('id user tidak ditemukan')
+      await expect(userRepositoryPostgres.getIdByEmail('notfoundemail@mail.com'))
+        .rejects.toBeInstanceOf(NotFoundError)
     })
   })
 })

@@ -113,4 +113,29 @@ describe('UserRepositoryPostgres', () => {
       await expect(user).rejects.toBeInstanceOf(NotFoundError)
     })
   })
+
+  describe('getPasswordByEmail', () => {
+    it('should return password when email found', async() => {
+      await UsersTableTestHelper.addUser({
+        email: 'testing@mail.com',
+        password: 'Password1!',
+      })
+
+      const userRepositoryPostgres = new UserRepositoryPostgres({pool})
+
+      const password = await userRepositoryPostgres.getPasswordByEmail('testing@mail.com')
+
+      expect(password).toBe('Password1!')
+    })
+
+    it('should throw NotFoundError when email not found', async() => {
+      const userRepositoryPostgres = new UserRepositoryPostgres({pool})
+      
+      await expect(userRepositoryPostgres.getPasswordByEmail('notFoundEmail@mail.com'))
+        .rejects.toThrowError('password user tidak ditemukan')
+      await expect(userRepositoryPostgres.getPasswordByEmail('notFoundEmail@mail.com'))
+        .rejects.toBeInstanceOf(NotFoundError)
+
+    })
+  })
 })

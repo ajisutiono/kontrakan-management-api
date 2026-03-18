@@ -32,4 +32,10 @@ describe('UserRepository abstract methods', () => {
       repository.findUserByEmail('test@example.com'),
     ).rejects.toThrowError('USER_REPOSITORY.METHOD_NOT_IMPLEMENTED')
   })
+
+  it('getPasswordByEmail should throw METHOD_NOT_IMPLEMENTED', async () => {
+    await expect(
+      repository.getPasswordByEmail('Password1!'),
+    ).rejects.toThrowError('USER_REPOSITORY.METHOD_NOT_IMPLEMENTED')
+  })
 })

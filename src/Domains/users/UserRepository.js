@@ -15,6 +15,10 @@ class UserRepository {
   async findUserByEmail(email) {
     throw new Error('USER_REPOSITORY.METHOD_NOT_IMPLEMENTED')
   }
+
+  async getPasswordByEmail(password) {
+    throw new Error('USER_REPOSITORY.METHOD_NOT_IMPLEMENTED')
+  }
 }
 
 export default UserRepository

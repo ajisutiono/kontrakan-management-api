@@ -81,6 +81,21 @@ class UserRepositoryPostgres extends UserRepository {
 
     return result.rows[0].password
   }
+
+  async getIdByEmail(email) {
+    const query = {
+      text: 'SELECT id FROM users WHERE email = $1',
+      values: [email]
+    }
+
+    const result = await this._pool.query(query)
+
+    if(!result.rowCount) {
+      throw new NotFoundError('id user tidak ditemukan')
+    }
+
+    return result.rows[0].id
+  }
 }
 
 export default UserRepositoryPostgres

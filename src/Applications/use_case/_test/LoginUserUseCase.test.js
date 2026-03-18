@@ -35,8 +35,10 @@ describe('LoginUserUseCase', () => {
     }
 
     const mockUserRepository = {
-      getPasswordByEmail: vi.fn().mockResolvedValue('encrypted_password'),
-      getIdByEmail: vi.fn().mockResolvedValue('user-123')
+      getUserByEmail: vi.fn().mockResolvedValue({
+        id: 'user-123',
+        password: 'encrypted_password'
+      })
     }
 
     const mockPasswordHash = {
@@ -61,9 +63,8 @@ describe('LoginUserUseCase', () => {
 
     const result = await loginUserUseCase.execute(useCasePayload)
 
-    expect(mockUserRepository.getPasswordByEmail).toBeCalledWith('testing@mail.com')
+    expect(mockUserRepository.getUserByEmail).toBeCalledWith('testing@mail.com')
     expect(mockPasswordHash.comparePassword).toBeCalledWith('Password1!', 'encrypted_password')
-    expect(mockUserRepository.getIdByEmail).toBeCalledWith('testing@mail.com')
     expect(mockTokenManager.createAccessToken).toBeCalledWith({ email: 'testing@mail.com', id: 'user-123' })
     expect(mockTokenManager.createRefreshToken).toBeCalledWith({ email: 'testing@mail.com', id: 'user-123' })
     expect(mockAuthenticationRepository.addToken).toBeCalledWith('refresh_token')

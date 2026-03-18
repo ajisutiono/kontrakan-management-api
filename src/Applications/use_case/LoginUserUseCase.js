@@ -18,11 +18,9 @@ class LoginUserUseCase {
   async execute(useCasePayload) {
     const { email, password } = new LoginUser(useCasePayload)
 
-    const encryptedPassword = await this._userRepository.getPasswordByEmail(email)
+    const {id, password: encryptedPassword} = await this._userRepository.getUserByEmail(email)
 
     await this._passwordHash.comparePassword(password, encryptedPassword)
-
-    const id = await this._userRepository.getIdByEmail(email)
 
     const accessToken = await this._tokenManager.createAccessToken({ email, id })
     const refreshToken = await this._tokenManager.createRefreshToken({ email, id })

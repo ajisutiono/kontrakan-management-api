@@ -2,18 +2,14 @@
 import pool from '../src/Infrastructures/database/postgres/pool.js'
 
 const AuthenticationsTableTestHelper = {
-  async addToken({
-    id = 'auth-123',
-    token = 'refresh_token_sample',
-    userId = 'user-123',
-  } = {}) {
+  async addToken(token = 'refresh_token_sample') {
     const query = {
-      text: `INSERT INTO authentications (id, token, user_id)
-                    VALUES ($1, $2, $3)`,
-      values: [id, token, userId],
+      text: 'INSERT INTO authentications (token) VALUES ($1)',
+      values: [token],
     }
 
     await pool.query(query)
+    return token
   },
 
   async findToken(token) {
@@ -23,23 +19,12 @@ const AuthenticationsTableTestHelper = {
     }
 
     const result = await pool.query(query)
-    return result.rows[0]
-  },
-
-  async findTokenByUserId(userId) {
-    const query = {
-      text: 'SELECT * FROM authentications WHERE user_id = $1',
-      values: [userId],
-    }
-
-    const result = await pool.query(query)
     return result.rows
   },
 
   async cleanTable() {
     await pool.query('TRUNCATE TABLE authentications')
   },
-
 }
 
 export default AuthenticationsTableTestHelper

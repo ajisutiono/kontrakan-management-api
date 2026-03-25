@@ -84,5 +84,19 @@ describe('DomainErrorTranslator', () => {
 
       expect(translatedError).toBe(error)
     })
+
+    it('should translate LOGIN_USER.NOT_CONTAIN_NEEDED_PROPERTY', () => {
+      const error = new Error('LOGIN_USER.NOT_CONTAIN_NEEDED_PROPERTY')
+      const translatedError = DomainErrorTranslator.translate(error)
+      expect(translatedError).toBeInstanceOf(InvariantError)
+      expect(translatedError.message).toBe('harus memasukkan email dan password')
+    })
+
+    it('should translate LOGIN_USER.NOT_MEET_DATA_TYPE_SPECIFICATION', () => {
+      const error = new Error('LOGIN_USER.NOT_MEET_DATA_TYPE_SPECIFICATION')
+      const translatedError = DomainErrorTranslator.translate(error)
+      expect(translatedError).toBeInstanceOf(InvariantError)
+      expect(translatedError.message).toBe('email dan password harus string')
+    })
   })
 })

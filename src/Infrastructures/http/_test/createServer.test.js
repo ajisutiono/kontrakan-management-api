@@ -1,8 +1,10 @@
 import { afterAll, afterEach, describe, expect, it } from 'vitest'
 import request from 'supertest'
-
+import bcrypt from 'bcrypt'
+// import BcryptPasswordHash from '../../security/BcryptPasswordHash.js'
 import pool from '../../database/postgres/pool.js'
 import UsersTableTestHelper from '../../../../tests/UsersTableTestHelper.js'
+import AuthenticationsTableTestHelper from '../../../../tests/AuthenticationsTableTestHelper.js'
 import createServer from '../createServer.js'
 import container from '../../container.js'
 
@@ -15,6 +17,7 @@ describe('HTTP server', () => {
 
   afterEach(async() => {
     await UsersTableTestHelper.cleanTable()
+    await AuthenticationsTableTestHelper.cleanTable()
   })
 
   describe('when POST /api/users', () => {
@@ -261,6 +264,33 @@ describe('HTTP server', () => {
       expect(response.status).toBe(500)
       expect(response.body.status).toBe('error')
       expect(response.body.message).toBe('Internal server error')
+    })
+  })
+
+  describe('when POST /api/authentications', () => {
+    it('should response 201 when create new authentication sucessfully', async() => {
+      const hashedPassword = await bcrypt.hash('Password1!', 10)
+
+      await UsersTableTestHelper.addUser({
+        name: 'Testing Name',
+        email: 'testing@mail.com',
+        password: hashedPassword,
+        role: 'owner'
+      })
+
+      const requestPayload = {
+        email: 'testing@mail.com',
+        password: 'Password1!',
+      }
+
+      const response = await request(server)
+        .post('/api/authentications')
+        .send(requestPayload)
+
+      expect(response.status).toBe(201)
+      expect(response.body.status).toBe('success')
+      expect(response.body.data.accessToken).toBeDefined()
+      expect(response.body.data.refreshToken).toBeDefined()
     })
   })
 })

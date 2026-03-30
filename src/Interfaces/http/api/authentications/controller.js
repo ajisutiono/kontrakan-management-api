@@ -9,7 +9,7 @@ class AuthenticationsController {
     const loginUserUseCase = this._container.resolve('loginUserUseCase')
     const { accessToken, refreshToken } = await loginUserUseCase.execute(req.body)
 
-    res.json({
+    res.status(201).json({
       status: 'success',
       data: { 
         accessToken,

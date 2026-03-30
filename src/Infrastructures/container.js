@@ -2,6 +2,7 @@
 import { createContainer, asValue, asClass, } from 'awilix'
 import { randomUUID } from 'crypto'
 import bcrypt from 'bcrypt'
+import jwt from 'jsonwebtoken'
 
 import pool from './database/postgres/pool.js'
 
@@ -26,6 +27,7 @@ container.register({
   bcrypt: asValue(bcrypt),
   idGenerator: asValue(randomUUID),
   saltRound: asValue(10),
+  jwt: asValue(jwt),
 
   // Repositories
   userRepository: asClass(UserRepositoryPostgres).singleton(),

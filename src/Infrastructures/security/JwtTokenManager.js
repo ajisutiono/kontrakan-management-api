@@ -3,7 +3,7 @@ import InvariantError from '../../Commons/exceptions/InvariantError.js'
 import TokenManager from '../../Applications/security/TokenManager.js'
 
 class JwtTokenManager extends TokenManager {
-  constructor(jwt) {
+  constructor({jwt}) {
     super()
     this._jwt = jwt
   }

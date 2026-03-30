@@ -16,7 +16,7 @@ describe('JwtTokenManager', () => {
         sign: vi.fn().mockImplementation(() => 'mock_token')
       }
 
-      const jwtTokenManager = new JwtTokenManager(mockJwtToken)
+      const jwtTokenManager = new JwtTokenManager({jwt: mockJwtToken})
 
       const accessToken = await jwtTokenManager.createAccessToken(payload)
 
@@ -35,7 +35,7 @@ describe('JwtTokenManager', () => {
         sign: vi.fn().mockImplementation(() => 'mock_token')
       }
 
-      const jwtTokenManager = new JwtTokenManager(mockJwtToken)
+      const jwtTokenManager = new JwtTokenManager({jwt: mockJwtToken})
 
       const accessToken = await jwtTokenManager.createRefreshToken(payload)
 
@@ -47,7 +47,7 @@ describe('JwtTokenManager', () => {
   describe('verifyRefreshToken function', () => {
     it('should throw InvariantError when verification failed', async () => {
       // pakai spyOn — jwt asli tapi kita paksa throw
-      const jwtTokenManager = new JwtTokenManager(jwt)
+      const jwtTokenManager = new JwtTokenManager({jwt})
       vi.spyOn(jwt, 'verify').mockImplementationOnce(() => {
         throw new Error('invalid token')
       })
@@ -60,7 +60,7 @@ describe('JwtTokenManager', () => {
 
     it('should not throw when refresh token valid', async () => {
       // pakai spyOn — jwt asli tapi kita paksa sukses
-      const jwtTokenManager = new JwtTokenManager(jwt)
+      const jwtTokenManager = new JwtTokenManager({jwt})
       vi.spyOn(jwt, 'verify').mockImplementationOnce(() => ({ email: 'testing@mail.com' }))
 
       await expect(jwtTokenManager.verifyRefreshToken('valid_token'))
@@ -74,7 +74,7 @@ describe('JwtTokenManager', () => {
       const mockJwtToken = {
         decode: vi.fn().mockReturnValue(payload)
       }
-      const jwtTokenManager = new JwtTokenManager(mockJwtToken)
+      const jwtTokenManager = new JwtTokenManager({jwt: mockJwtToken})
 
       const decoded = await jwtTokenManager.decodePayload('some_token')
 

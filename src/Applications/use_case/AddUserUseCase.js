@@ -10,7 +10,7 @@ class AddUserUseCase {
 
   async execute(useCasePayload) {
     const registerUser = new RegisterUser(useCasePayload)
-    await this._userRepository.verifyAvailableEmail(registerUser.email)
+    await this._userRepository.verifyAvailabilityEmail(registerUser.email)
     this._passwordValidator.validate(registerUser.password)
     const hashedPassword = await this._passwordHash.hash(registerUser.password)
     

@@ -28,14 +28,14 @@ describe('AuthenticationRepositoryPostgres', () => {
     })
   })
 
-  describe('checkAvailableToken function', () => {
+  describe('checkAvailabilityToken function', () => {
     it('should throw InvariantError when token unavailable', async() => {
       const authenticationRepositoryPostgres = new AuthenticationRepositoryPostgres({pool})
       
-      await expect(authenticationRepositoryPostgres.checkAvailableToken(''))
+      await expect(authenticationRepositoryPostgres.checkAvailabilityToken(''))
         .rejects
         .toThrowError('refresh token tidak ditemukan')
-      await expect(authenticationRepositoryPostgres.checkAvailableToken(''))
+      await expect(authenticationRepositoryPostgres.checkAvailabilityToken(''))
         .rejects
         .toBeInstanceOf(InvariantError)
     })
@@ -46,7 +46,7 @@ describe('AuthenticationRepositoryPostgres', () => {
 
       await AuthencticationTableTestHelper.addToken(token)
 
-      await expect(authenticationRepositoryPostgres.checkAvailableToken(token))
+      await expect(authenticationRepositoryPostgres.checkAvailabilityToken(token))
         .resolves
         .not.toThrow(InvariantError)
     })

@@ -28,7 +28,7 @@ describe('AddUserUseCase', () => {
     const mockPasswordHash = new PasswordHash()
 
     // mocking needed function
-    mockUserRepository.verifyAvailableEmail = vi.fn()
+    mockUserRepository.verifyAvailabilityEmail = vi.fn()
       .mockResolvedValue()
     mockPasswordValidator.validate = vi.fn()
       .mockImplementation(() => { })
@@ -53,7 +53,7 @@ describe('AddUserUseCase', () => {
       name: 'test',
       role: 'owner',
     }))
-    expect(mockUserRepository.verifyAvailableEmail).toBeCalledWith(useCasePayload.email)
+    expect(mockUserRepository.verifyAvailabilityEmail).toBeCalledWith(useCasePayload.email)
     expect(mockPasswordValidator.validate).toBeCalledWith(useCasePayload.password)
     expect(mockPasswordHash.hash).toBeCalledWith(useCasePayload.password)
     expect(mockUserRepository.addUser).toBeCalledWith({
@@ -78,7 +78,7 @@ describe('AddUserUseCase', () => {
     const mockPasswordHash = new PasswordHash()
 
     // mocking
-    mockUserRepository.verifyAvailableEmail = vi.fn()
+    mockUserRepository.verifyAvailabilityEmail = vi.fn()
       .mockRejectedValue(new Error('EMAIL_ALREADY_EXIST'))
     mockPasswordValidator.validate = vi.fn()
       .mockImplementation(() => { })
@@ -110,7 +110,7 @@ describe('AddUserUseCase', () => {
     const mockPasswordHash = new PasswordHash()
 
     // mock
-    mockUserRepository.verifyAvailableEmail = vi.fn()
+    mockUserRepository.verifyAvailabilityEmail = vi.fn()
       .mockResolvedValue()
     mockPasswordValidator.validate = vi.fn()
       .mockImplementation(() => {

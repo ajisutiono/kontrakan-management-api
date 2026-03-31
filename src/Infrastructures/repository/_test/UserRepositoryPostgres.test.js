@@ -17,11 +17,11 @@ describe('UserRepositoryPostgres', () => {
     await pool.end()
   })
 
-  describe('verifyAvailableEmail function', () => {
+  describe('verifyAvailabilityEmail function', () => {
     it('should not throw when email available', async () => {
       const userRepositoryPostgres = new UserRepositoryPostgres({pool})
 
-      await expect(userRepositoryPostgres.verifyAvailableEmail('test2@example.com'))
+      await expect(userRepositoryPostgres.verifyAvailabilityEmail('test2@example.com'))
         .resolves.not.toThrow()
     })
 
@@ -30,11 +30,11 @@ describe('UserRepositoryPostgres', () => {
       const userRepositoryPostgres = new UserRepositoryPostgres({pool})
 
       await expect(
-        userRepositoryPostgres.verifyAvailableEmail('test@example.com')
+        userRepositoryPostgres.verifyAvailabilityEmail('test@example.com')
       ).rejects.toThrowError('tidak dapat membuat user baru karena email sudah ada')
 
       await expect(
-        userRepositoryPostgres.verifyAvailableEmail('test@example.com')
+        userRepositoryPostgres.verifyAvailabilityEmail('test@example.com')
       ).rejects.toBeInstanceOf(InvariantError)
     })
   })

@@ -24,7 +24,7 @@ class UserRepositoryPostgres extends UserRepository {
     return result.rows[0]
   }
 
-  async verifyAvailableEmail(email) {
+  async verifyAvailabilityEmail(email) {
     const query = {
       text: 'SELECT email FROM users WHERE email = $1',
       values: [email],

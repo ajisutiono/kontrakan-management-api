@@ -16,7 +16,7 @@ class AuthenticationRepositoryPostgres extends AuthenticationRepository {
     await this._pool.query(query)
   }
 
-  async checkAvailableToken(token) {
+  async checkAvailabilityToken(token) {
     const query = {
       text: 'SELECT * FROM authentications WHERE token = $1',
       values: [token]

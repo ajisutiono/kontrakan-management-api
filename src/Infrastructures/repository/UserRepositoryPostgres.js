@@ -48,7 +48,7 @@ class UserRepositoryPostgres extends UserRepository {
     const result = await this._pool.query(query)
 
     if(!result.rowCount) {
-      throw new AuthenticationError('user tidak ditemukan')
+      throw new AuthenticationError('email atau password salah')
     }
 
     return result.rows[0]

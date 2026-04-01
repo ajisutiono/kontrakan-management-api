@@ -14,7 +14,9 @@ class RefreshAuthenticationUseCase {
 
     await this._authenticationRepository.checkAvailabilityToken(refreshToken)
     
-    const { email, id }  = await this._tokenManager.verifyRefreshToken(refreshToken)
+    await this._tokenManager.verifyRefreshToken(refreshToken)
+
+    const { email, id } = await this._tokenManager.decodePayload(refreshToken)
 
     return this._tokenManager.createAccessToken({ email, id })
   }

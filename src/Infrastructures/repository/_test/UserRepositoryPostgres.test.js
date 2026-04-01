@@ -58,11 +58,11 @@ describe('UserRepositoryPostgres', () => {
       expect(user.password).toBe('Password1!')
     })
   
-    it('should throw AuthenticationErro when email not found', async() => {
+    it('should throw AuthenticationError when email not found', async() => {
       const userRepositoryPostgres = new UserRepositoryPostgres({pool})
 
       await expect(userRepositoryPostgres.getUserByEmail('notfoundemail@mail.com'))
-        .rejects.toThrowError('user tidak ditemukan')
+        .rejects.toThrowError('email atau password salah')
       await expect(userRepositoryPostgres.getUserByEmail('notfoundemail@mail.com'))
         .rejects.toBeInstanceOf(AuthenticationError)
     })

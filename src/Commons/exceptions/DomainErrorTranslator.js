@@ -26,6 +26,12 @@ const DomainErrorTranslator = {
       return new InvariantError('harus memasukkan email dan password')
     case 'LOGIN_USER.NOT_MEET_DATA_TYPE_SPECIFICATION':
       return new InvariantError('email dan password harus string')
+
+    // Authentication errors
+    case 'REFRESH_AUTHENTICATION.NOT_CONTAIN_NEEDED_PROPERTY':
+      return new InvariantError('harus memasukkan tokne yang benar')
+    case 'REFRESH_AUTHENTICATION.NOT_MEET_DATA_TYPE_SPECIFICATION':
+      return new InvariantError('token harus string')
     default:
       return error
     }

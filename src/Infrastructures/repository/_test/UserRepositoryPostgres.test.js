@@ -7,6 +7,7 @@ import pool from '../../database/postgres/pool.js'
 import UserRepositoryPostgres from '../UserRepositoryPostgres.js'
 import InvariantError from '../../../Commons/exceptions/InvariantError.js'
 import NotFoundError from '../../../Commons/exceptions/NotFoundError.js'
+import AuthenticationError from '../../../Commons/exceptions/AuthenticationError.js'
 
 describe('UserRepositoryPostgres', () => {
   afterEach(async () => {
@@ -36,6 +37,34 @@ describe('UserRepositoryPostgres', () => {
       await expect(
         userRepositoryPostgres.verifyAvailabilityEmail('test@example.com')
       ).rejects.toBeInstanceOf(InvariantError)
+    })
+  })
+
+  describe('getUserByEmail', () => {
+    it('should return user when email found', async() => {
+      const fakeId = randomUUID()
+
+      await UsersTableTestHelper.addUser({
+        id: fakeId,
+        email: 'testing@mail.com',
+        password: 'Password1!',
+      })
+
+      const userRepositoryPostgres = new UserRepositoryPostgres({pool})
+
+      const user = await userRepositoryPostgres.getUserByEmail('testing@mail.com')
+
+      expect(user.id).toBe(fakeId)
+      expect(user.password).toBe('Password1!')
+    })
+  
+    it('should throw AuthenticationErro when email not found', async() => {
+      const userRepositoryPostgres = new UserRepositoryPostgres({pool})
+
+      await expect(userRepositoryPostgres.getUserByEmail('notfoundemail@mail.com'))
+        .rejects.toThrowError('user tidak ditemukan')
+      await expect(userRepositoryPostgres.getUserByEmail('notfoundemail@mail.com'))
+        .rejects.toBeInstanceOf(AuthenticationError)
     })
   })
 
@@ -114,31 +143,5 @@ describe('UserRepositoryPostgres', () => {
     })
   })
 
-  describe('getUserByEmail', () => {
-    it('should return user when email found', async() => {
-      const fakeId = randomUUID()
 
-      await UsersTableTestHelper.addUser({
-        id: fakeId,
-        email: 'testing@mail.com',
-        password: 'Password1!',
-      })
-
-      const userRepositoryPostgres = new UserRepositoryPostgres({pool})
-
-      const user = await userRepositoryPostgres.getUserByEmail('testing@mail.com')
-
-      expect(user.id).toBe(fakeId)
-      expect(user.password).toBe('Password1!')
-    })
-  
-    it('should throw NotFoundError when email not found', async() => {
-      const userRepositoryPostgres = new UserRepositoryPostgres({pool})
-
-      await expect(userRepositoryPostgres.getUserByEmail('notfoundemail@mail.com'))
-        .rejects.toThrowError('user tidak ditemukan')
-      await expect(userRepositoryPostgres.getUserByEmail('notfoundemail@mail.com'))
-        .rejects.toBeInstanceOf(NotFoundError)
-    })
-  })
 })

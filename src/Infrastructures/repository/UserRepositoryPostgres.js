@@ -3,6 +3,8 @@ import { randomUUID } from 'crypto'
 import UserRepository from '../../Domains/users/UserRepository.js'
 import InvariantError from '../../Commons/exceptions/InvariantError.js'
 import NotFoundError from '../../Commons/exceptions/NotFoundError.js'
+import AuthenticationError from '../../Commons/exceptions/AuthenticationError.js'
+
 
 class UserRepositoryPostgres extends UserRepository {
   constructor({ pool, idGenerator = randomUUID }) {
@@ -37,6 +39,21 @@ class UserRepositoryPostgres extends UserRepository {
     }
   }
 
+  async getUserByEmail(email) {
+    const query = {
+      text: 'SELECT id, password FROM users WHERE email = $1',
+      values: [email]
+    }
+
+    const result = await this._pool.query(query)
+
+    if(!result.rowCount) {
+      throw new AuthenticationError('user tidak ditemukan')
+    }
+
+    return result.rows[0]
+  }
+
   async findUserById(userId) {
     const query = {
       text: 'SELECT id, name, email, role, created_at FROM users WHERE id = $1',
@@ -67,20 +84,7 @@ class UserRepositoryPostgres extends UserRepository {
     return result.rows[0]
   }
 
-  async getUserByEmail(email) {
-    const query = {
-      text: 'SELECT id, password FROM users WHERE email = $1',
-      values: [email]
-    }
 
-    const result = await this._pool.query(query)
-
-    if(!result.rowCount) {
-      throw new NotFoundError('user tidak ditemukan')
-    }
-
-    return result.rows[0]
-  }
 }
 
 export default UserRepositoryPostgres

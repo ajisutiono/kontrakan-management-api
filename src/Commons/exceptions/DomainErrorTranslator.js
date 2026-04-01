@@ -29,7 +29,7 @@ const DomainErrorTranslator = {
 
     // Authentication errors
     case 'REFRESH_AUTHENTICATION.NOT_CONTAIN_NEEDED_PROPERTY':
-      return new InvariantError('harus memasukkan tokne yang benar')
+      return new InvariantError('harus memasukkan token yang benar')
     case 'REFRESH_AUTHENTICATION.NOT_MEET_DATA_TYPE_SPECIFICATION':
       return new InvariantError('token harus string')
     default:

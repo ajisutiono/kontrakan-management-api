@@ -17,6 +17,19 @@ class AuthenticationsController {
       },
     })
   })
+
+  putAuthentication = asyncHandler(async (req, res) => {
+    const refreshAuthenticationUseCase = this._container.resolve('refreshAuthenticationUseCase')
+
+    const accessToken = await refreshAuthenticationUseCase.execute(req.body)
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        accessToken
+      }
+    })
+  })
 }
 
 export default AuthenticationsController

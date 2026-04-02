@@ -18,6 +18,7 @@ import JwtTokenManager from './security/JwtTokenManager.js'
 // use case
 import AddUserUseCase from '../Applications/use_case/AddUserUseCase.js'
 import LoginUserUseCase from '../Applications/use_case/LoginUserUseCase.js'
+import RefreshAuthenticationUseCase from '../Applications/use_case/RefreshAuthenticationUseCase.js'
 
 const container = createContainer()
 
@@ -41,6 +42,7 @@ container.register({
   // Use cases
   addUserUseCase: asClass(AddUserUseCase).singleton(),
   loginUserUseCase: asClass(LoginUserUseCase).singleton(),
+  refreshAuthenticationUseCase: asClass(RefreshAuthenticationUseCase).singleton(),
 
 })
 

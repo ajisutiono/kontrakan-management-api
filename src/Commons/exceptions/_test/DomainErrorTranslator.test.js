@@ -113,5 +113,19 @@ describe('DomainErrorTranslator', () => {
       expect(translatedError).toBeInstanceOf(InvariantError)
       expect(translatedError.message).toBe('harus memasukkan tipe data yang sesuai')
     })
+
+    it('should translate DELETE_AUTHENTICATION.NOT_CONTAIN_NEEDED_PROPERTY', () => {
+      const error = new Error('DELETE_AUTHENTICATION.NOT_CONTAIN_NEEDED_PROPERTY')
+      const translatedError = DomainErrorTranslator.translate(error)
+      expect(translatedError).toBeInstanceOf(InvariantError)
+      expect(translatedError.message).toBe('property yang dibutuhkan tidak ada')
+    })
+
+    it('should translate DELETE_AUTHENTICATION.NOT_MEET_DATA_TYPE_SPECIFICATION', () => {
+      const error = new Error('DELETE_AUTHENTICATION.NOT_MEET_DATA_TYPE_SPECIFICATION')
+      const translatedError = DomainErrorTranslator.translate(error)
+      expect(translatedError).toBeInstanceOf(InvariantError)
+      expect(translatedError.message).toBe('harus memasukkan tipe data yang sesuai')
+    })
   })
 })

@@ -5,6 +5,7 @@ const createAuthenticationsRouter = (controller) => {
 
   router.post('/', controller.postAuthentication)
   router.put('/', controller.putAuthentication)
+  router.delete('/', controller.deleteAuthentication)
 
   return router
 }

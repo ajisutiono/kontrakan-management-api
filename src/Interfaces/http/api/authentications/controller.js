@@ -30,6 +30,16 @@ class AuthenticationsController {
       }
     })
   })
+
+  deleteAuthentication = asyncHandler(async (req, res) => {
+    const deleteAuthenticationUseCase = this._container.resolve('deleteAuthenticationUseCase')
+
+    await deleteAuthenticationUseCase.execute(req.body)
+
+    res.status(200).json({
+      status: 'success',
+    })
+  })
 }
 
 export default AuthenticationsController

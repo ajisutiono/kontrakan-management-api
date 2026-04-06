@@ -15,9 +15,9 @@ describe('UserRepository abstract methods', () => {
     )
   })
 
-  it('verifyEmailAvailability should throw METHOD_NOT_IMPLEMENTED', async () => {
+  it('verifyAvailabilityEmail should throw METHOD_NOT_IMPLEMENTED', async () => {
     await expect(
-      repository.verifyEmailAvailability('test@example.com'),
+      repository.verifyAvailabilityEmail('test@example.com'),
     ).rejects.toThrowError('USER_REPOSITORY.METHOD_NOT_IMPLEMENTED')
   })
 

@@ -48,6 +48,7 @@ describe('UserRepositoryPostgres', () => {
         id: fakeId,
         email: 'testing@mail.com',
         password: 'Password1!',
+        role: 'owner'
       })
 
       const userRepositoryPostgres = new UserRepositoryPostgres({pool})
@@ -56,6 +57,7 @@ describe('UserRepositoryPostgres', () => {
 
       expect(user.id).toBe(fakeId)
       expect(user.password).toBe('Password1!')
+      expect(user.role).toBe('owner')
     })
   
     it('should throw AuthenticationError when email not found', async() => {

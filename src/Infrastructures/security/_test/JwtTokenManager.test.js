@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken'
 import config from '../../../Commons/config.js'
 import InvariantError from '../../../Commons/exceptions/InvariantError.js'
 import JwtTokenManager from '../JwtTokenManager.js'
+import AuthorizationError from '../../../Commons/exceptions/AuthorizationError.js'
 
 describe('JwtTokenManager', () => {
   describe('createAccessToken function', () => {
@@ -80,6 +81,29 @@ describe('JwtTokenManager', () => {
 
       expect(mockJwtToken.decode).toBeCalledWith('some_token')
       expect(decoded).toEqual(payload)
+    })
+  })
+
+  describe('verifyAccessToken function', () => {
+    it('should throw AuthorizationError when verification token failed', async () => {
+      // pakai spyOn — jwt asli tapi kita paksa throw
+      const jwtTokenManager = new JwtTokenManager({jwt})
+      vi.spyOn(jwt, 'verify').mockImplementationOnce(() => {
+        throw new Error('authorization error')
+      })
+
+      await expect(jwtTokenManager.verifyAccessToken('invalid_token'))
+        .rejects.toThrowError('access token tidak valid')
+      await expect(jwtTokenManager.verifyAccessToken('invalid_token'))
+        .rejects.toBeInstanceOf(AuthorizationError)
+    })
+
+    it('should not throw when access token valid', async () => {
+      const jwtTokenManager = new JwtTokenManager({jwt})
+      vi.spyOn(jwt, 'verify').mockImplementationOnce(() => ({ email: 'testing@mail.com' }))
+
+      await expect(jwtTokenManager.verifyAccessToken('valid_token'))
+        .resolves.not.toThrow()
     })
   })
 })

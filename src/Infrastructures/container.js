@@ -9,6 +9,7 @@ import pool from './database/postgres/pool.js'
 // repository
 import UserRepositoryPostgres from './repository/UserRepositoryPostgres.js'
 import AuthenticationRepositoryPostgres from './repository/AuthenticationRepositoryPostgres.js'
+import RoomRepositoryPostgres from './repository/RoomRepositoryPostgres.js'
 
 // security
 import BcryptPasswordHash from './security/BcryptPasswordHash.js'
@@ -20,6 +21,7 @@ import AddUserUseCase from '../Applications/use_case/AddUserUseCase.js'
 import LoginUserUseCase from '../Applications/use_case/LoginUserUseCase.js'
 import RefreshAuthenticationUseCase from '../Applications/use_case/RefreshAuthenticationUseCase.js'
 import DeleteAuthenticationUseCase from '../Applications/use_case/DeleteAuthenticationUseCase.js'
+import AddRoomUseCase from '../Applications/use_case/AddRoomUseCase.js'
 
 const container = createContainer()
 
@@ -34,6 +36,7 @@ container.register({
   // Repositories
   userRepository: asClass(UserRepositoryPostgres).singleton(),
   authenticationRepository: asClass(AuthenticationRepositoryPostgres).singleton(),
+  roomRepository: asClass(RoomRepositoryPostgres).singleton(),
 
   // Security
   passwordHash: asClass(BcryptPasswordHash).singleton(),
@@ -45,6 +48,7 @@ container.register({
   loginUserUseCase: asClass(LoginUserUseCase).singleton(),
   refreshAuthenticationUseCase: asClass(RefreshAuthenticationUseCase).singleton(),
   deleteAuthenticationUseCase: asClass(DeleteAuthenticationUseCase).singleton(),
+  addRoomUseCase: asClass(AddRoomUseCase).singleton(),
 
 })
 

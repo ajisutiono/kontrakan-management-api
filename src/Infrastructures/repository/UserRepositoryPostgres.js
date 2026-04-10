@@ -41,7 +41,7 @@ class UserRepositoryPostgres extends UserRepository {
 
   async getUserByEmail(email) {
     const query = {
-      text: 'SELECT id, password FROM users WHERE email = $1',
+      text: 'SELECT id, password, role FROM users WHERE email = $1',
       values: [email]
     }
 

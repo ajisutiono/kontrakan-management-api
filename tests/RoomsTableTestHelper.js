@@ -15,7 +15,7 @@ const RoomsTableTestHelper = {
     const query = {
       text: `INSERT INTO rooms (id, owner_id, room_number, type, price, facilities)
                     VALUES ($1, $2, $3, $4, $5, $6)`,
-      values: [id, owner_id, room_number, type, price, facilities]
+      values: [id, owner_id, room_number, type, price, facilities ? JSON.stringify(facilities) : null]
     }
 
     await pool.query(query)

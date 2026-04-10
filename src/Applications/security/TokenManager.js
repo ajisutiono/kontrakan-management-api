@@ -15,6 +15,10 @@ class TokenManager {
   async decodePayload(token) {
     throw new Error('TOKEN_MANAGER.METHOD_NOT_IMPLEMENTED')
   }
+
+  async verifyAccessToken(token) {
+    throw new Error('TOKEN_MANAGER.METHOD_NOT_IMPLEMENTED')
+  }
 }
 
 export default TokenManager

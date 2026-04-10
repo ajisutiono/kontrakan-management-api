@@ -37,7 +37,8 @@ describe('LoginUserUseCase', () => {
     const mockUserRepository = {
       getUserByEmail: vi.fn().mockResolvedValue({
         id: 'user-123',
-        password: 'encrypted_password'
+        password: 'encrypted_password',
+        role: 'owner'
       })
     }
 
@@ -65,8 +66,8 @@ describe('LoginUserUseCase', () => {
 
     expect(mockUserRepository.getUserByEmail).toBeCalledWith('testing@mail.com')
     expect(mockPasswordHash.comparePassword).toBeCalledWith('Password1!', 'encrypted_password')
-    expect(mockTokenManager.createAccessToken).toBeCalledWith({ email: 'testing@mail.com', id: 'user-123' })
-    expect(mockTokenManager.createRefreshToken).toBeCalledWith({ email: 'testing@mail.com', id: 'user-123' })
+    expect(mockTokenManager.createAccessToken).toBeCalledWith({ email: 'testing@mail.com', id: 'user-123', role: 'owner' })
+    expect(mockTokenManager.createRefreshToken).toBeCalledWith({ email: 'testing@mail.com', id: 'user-123', role: 'owner' })
     expect(mockAuthenticationRepository.addToken).toBeCalledWith('refresh_token')
 
     expect(result).toEqual({

@@ -21,6 +21,12 @@ const DomainErrorTranslator = {
     'REFRESH_AUTHENTICATION.NOT_MEET_DATA_TYPE_SPECIFICATION': new InvariantError('harus memasukkan tipe data yang sesuai'),
     'DELETE_AUTHENTICATION.NOT_CONTAIN_NEEDED_PROPERTY': new InvariantError('property yang dibutuhkan tidak ada'),
     'DELETE_AUTHENTICATION.NOT_MEET_DATA_TYPE_SPECIFICATION': new InvariantError('harus memasukkan tipe data yang sesuai'),
+
+    // RegisterRoom errors
+    'REGISTER_ROOM.NOT_CONTAIN_NEEDED_PROPERTY': new InvariantError('tidak dapat membuat kamar baru karena properti yang dibutuhkan tidak ada'),
+    'REGISTER_ROOM.NOT_MEET_DATA_TYPE_SPECIFICATION': new InvariantError('tidak dapat membuat kamar baru karena tipe data tidak sesuai'),
+    'REGISTER_ROOM.ROOM_NUMBER_TOO_LONG': new InvariantError('tidak dapat membuat kamar baru karena nomor kamar terlalu panjang'),
+    'REGISTER_ROOM.TYPE_TOO_LONG': new InvariantError('tidak dapat membuat kamar baru karena type terlalu panjang'),
   },
 
   translate(error) {

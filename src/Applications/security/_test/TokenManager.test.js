@@ -27,4 +27,10 @@ describe('TokenManager interface', () => {
       'TOKEN_MANAGER.METHOD_NOT_IMPLEMENTED'
     )
   })
+
+  it('verifyAccessToken should throw TOKEN_MANAGER.METHOD_NOT_IMPLEMENTED', async () => {
+    await expect(tokenManager.verifyAccessToken('token')).rejects.toThrow(
+      'TOKEN_MANAGER.METHOD_NOT_IMPLEMENTED'
+    )
+  })
 })

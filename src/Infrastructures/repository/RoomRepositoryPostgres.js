@@ -17,7 +17,7 @@ class RoomRepositoryPostgres extends RoomRepository {
 
     const query = {
       text: 'INSERT INTO rooms (id, owner_id, room_number, type, price, facilities) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id, owner_id, room_number',
-      values: [id, owner_id, room_number, type, price, facilities]
+      values: [id, owner_id, room_number, type, price, facilities ? JSON.stringify(facilities) : null]
     }
 
     const result = await this._pool.query(query)

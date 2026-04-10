@@ -127,5 +127,33 @@ describe('DomainErrorTranslator', () => {
       expect(translatedError).toBeInstanceOf(InvariantError)
       expect(translatedError.message).toBe('harus memasukkan tipe data yang sesuai')
     })
+
+    it('should translate REGISTER_ROOM.NOT_CONTAIN_NEEDED_PROPERTY', () => {
+      const error = new Error('REGISTER_ROOM.NOT_CONTAIN_NEEDED_PROPERTY')
+      const translatedError = DomainErrorTranslator.translate(error)
+      expect(translatedError).toBeInstanceOf(InvariantError)
+      expect(translatedError.message).toBe('tidak dapat membuat kamar baru karena properti yang dibutuhkan tidak ada')
+    })
+
+    it('should translate REGISTER_ROOM.NOT_MEET_DATA_TYPE_SPECIFICATION', () => {
+      const error = new Error('REGISTER_ROOM.NOT_MEET_DATA_TYPE_SPECIFICATION')
+      const translatedError = DomainErrorTranslator.translate(error)
+      expect(translatedError).toBeInstanceOf(InvariantError)
+      expect(translatedError.message).toBe('tidak dapat membuat kamar baru karena tipe data tidak sesuai')
+    })
+
+    it('should translate REGISTER_ROOM.ROOM_NUMBER_TOO_LONG', () => {
+      const error = new Error('REGISTER_ROOM.ROOM_NUMBER_TOO_LONG')
+      const translatedError = DomainErrorTranslator.translate(error)
+      expect(translatedError).toBeInstanceOf(InvariantError)
+      expect(translatedError.message).toBe('tidak dapat membuat kamar baru karena nomor kamar terlalu panjang')
+    })
+
+    it('should translate REGISTER_ROOM.TYPE_TOO_LONG', () => {
+      const error = new Error('REGISTER_ROOM.TYPE_TOO_LONG')
+      const translatedError = DomainErrorTranslator.translate(error)
+      expect(translatedError).toBeInstanceOf(InvariantError)
+      expect(translatedError.message).toBe('tidak dapat membuat kamar baru karena type terlalu panjang')
+    })
   })
 })

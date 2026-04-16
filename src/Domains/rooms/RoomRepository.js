@@ -4,7 +4,7 @@ class RoomRepository {
     throw new Error('ROOM_REPOSITORY.METHOD_NOT_IMPLEMENTED')
   }
 
-  async getRooms(filters) {
+  async getRooms({ filters, page, limit, userRole }) {
     throw new Error('ROOM_REPOSITORY.METHOD_NOT_IMPLEMENTED')
   }
 }

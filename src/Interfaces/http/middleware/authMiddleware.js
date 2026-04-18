@@ -19,7 +19,11 @@ const authMiddleware = (container) => async (req, res, next) => {
 
     next()
   } catch (error) {
-    next(error)
+    if (error instanceof AuthenticationError) {
+      return next(error)
+    }
+
+    return next(new AuthenticationError('Invalid access token'))
   }
 }
 

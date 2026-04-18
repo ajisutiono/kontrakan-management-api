@@ -17,6 +17,24 @@ class RoomsController {
       data: registeredRoom
     })
   })
+
+  getRooms = asyncHandler(async (req, res) => {
+    const { page, limit, ...filters } = req.query
+
+    const getRoomsUseCase = this._container.resolve('getRoomsUseCase')
+
+    const result = await getRoomsUseCase.execute({
+      filters,
+      page: Number(page),
+      limit: Number(limit),
+      userRole: req.user.role,
+    })
+
+    res.json({
+      status: 'success',
+      data: result,
+    })
+  })
 }
 
 export default RoomsController

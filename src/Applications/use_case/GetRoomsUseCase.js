@@ -3,12 +3,15 @@ class GetRoomsUseCase {
     this._roomRepository = roomRepository
   }
 
-  async execute({filters = {}, page = 1, limit = 10, userRole}) {
+  async execute({ filters = {}, page = 1, limit = 10 }) {
+    const finalFilters = { ...filters }
+
+    finalFilters.status = 'available'
+
     return await this._roomRepository.getRooms({
-      filters,
+      filters: finalFilters,
       page,
       limit,
-      userRole,
     })
   }
 }

@@ -22,6 +22,7 @@ import LoginUserUseCase from '../Applications/use_case/LoginUserUseCase.js'
 import RefreshAuthenticationUseCase from '../Applications/use_case/RefreshAuthenticationUseCase.js'
 import DeleteAuthenticationUseCase from '../Applications/use_case/DeleteAuthenticationUseCase.js'
 import AddRoomUseCase from '../Applications/use_case/AddRoomUseCase.js'
+import GetRoomsUseCase from '../Applications/use_case/GetRoomsUseCase.js'
 
 const container = createContainer()
 
@@ -49,6 +50,7 @@ container.register({
   refreshAuthenticationUseCase: asClass(RefreshAuthenticationUseCase).singleton(),
   deleteAuthenticationUseCase: asClass(DeleteAuthenticationUseCase).singleton(),
   addRoomUseCase: asClass(AddRoomUseCase).singleton(),
+  getRoomsUseCase: asClass(GetRoomsUseCase).singleton(),
 
 })
 

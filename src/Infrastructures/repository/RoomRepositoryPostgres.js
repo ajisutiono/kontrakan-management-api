@@ -24,63 +24,61 @@ class RoomRepositoryPostgres extends RoomRepository {
     return result.rows[0]
   }
 
-  async getRooms({ filters = {}, page = 1, limit = 10, userRole }) {
-    const { ownerId, minPrice, maxPrice } = filters
+  async getRooms({ filters = {}, page = 1, limit = 10 }) {
+    const { ownerId, minPrice, maxPrice, status } = filters
 
     const conditions = []
     const values = []
 
-    if(ownerId) {
+    if (ownerId) {
       values.push(ownerId)
       conditions.push(`r.owner_id = $${values.length}`)
     }
 
-    if(minPrice !== undefined) {
+    if (minPrice !== undefined) {
       values.push(minPrice)
       conditions.push(`r.price >= $${values.length}`)
     }
 
-    if(maxPrice !== undefined) {
+    if (maxPrice !== undefined) {
       values.push(maxPrice)
       conditions.push(`r.price <= $${values.length}`)
     }
 
-    if(userRole !== 'owner') {
-      values.push('available')
+    // 🔥 pindahkan ke sini (dari use case)
+    if (status) {
+      values.push(status)
       conditions.push(`r.status = $${values.length}`)
     }
 
-    let whereClause = ''
-    if (conditions.length > 0) {
-      whereClause = `WHERE ${conditions.join(' AND ')}`
-    }
+    const whereClause = conditions.length
+      ? `WHERE ${conditions.join(' AND ')}`
+      : ''
 
     const offset = (page - 1) * limit
 
     const result = await this._pool.query({
       text: `SELECT
-                r.id,
-                r.room_number,
-                r.type,
-                r.price,
-                r.facilities,
-                r.status,
-                u.id AS owner_id,
-                u.name AS owner_name,
-                u.email AS owner_email
-             FROM rooms r
-             JOIN users u ON r.owner_id = u.id
-             ${whereClause}
-             ORDER BY r.created_at DESC
-             LIMIT $${values.length + 1}
-             OFFSET $${values.length + 2}`,
-      values: [...values, limit, offset]
+              r.id,
+              r.room_number,
+              r.type,
+              r.price,
+              r.facilities,
+              r.status,
+              u.id AS owner_id,
+              u.name AS owner_name,
+              u.email AS owner_email
+           FROM rooms r
+           JOIN users u ON r.owner_id = u.id
+           ${whereClause}
+           ORDER BY r.created_at DESC
+           LIMIT $${values.length + 1}
+           OFFSET $${values.length + 2}`,
+      values: [...values, limit, offset],
     })
-  
+
     const countResult = await this._pool.query({
-      text: `SELECT COUNT(*)
-              FROM rooms r
-              ${whereClause}`,
+      text: `SELECT COUNT(*) FROM rooms r ${whereClause}`,
       values,
     })
 
@@ -94,7 +92,7 @@ class RoomRepositoryPostgres extends RoomRepository {
       page,
       limit,
       total,
-      totalPages: total > 0 ? Math.ceil(total / limit) : 0
+      totalPages: total > 0 ? Math.ceil(total / limit) : 0,
     }
   }
 }

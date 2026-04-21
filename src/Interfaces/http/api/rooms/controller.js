@@ -19,20 +19,35 @@ class RoomsController {
   })
 
   getRooms = asyncHandler(async (req, res) => {
-    const { page, limit, ...filters } = req.query
+    const { page, limit, ownerId, minPrice, maxPrice } = req.query
+
+    const finalPage = Number.isNaN(Number(page)) ? 1 : Number(page)
+    const finalLimit = Number.isNaN(Number(limit)) ? 10 : Number(limit)
+
+    const filters = {}
+    if (ownerId) filters.ownerId = ownerId
+    if (minPrice !== undefined) filters.minPrice = Number(minPrice)
+    if (maxPrice !== undefined) filters.maxPrice = Number(maxPrice)
 
     const getRoomsUseCase = this._container.resolve('getRoomsUseCase')
 
     const result = await getRoomsUseCase.execute({
       filters,
-      page: Number(page),
-      limit: Number(limit),
-      userRole: req.user.role,
+      page: finalPage,
+      limit: finalLimit,
     })
 
     res.json({
       status: 'success',
-      data: result,
+      data: result.data,
+      meta: {
+        pagination: {
+          page: result.page,
+          limit: result.limit,
+          total: result.total,
+          totalPages: result.totalPages,
+        }
+      }
     })
   })
 }

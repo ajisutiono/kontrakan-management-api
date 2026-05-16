@@ -43,7 +43,7 @@ src/
 
 - [x] Authentication — Register, Login, Refresh Token, Logout
 - [x] Room management — add room, listing with filter & pagination
-- [ ] Owner dashboard — manage own rooms
+- [x] Owner dashboard — manage own rooms
 - [ ] Tenant management
 - [ ] Payment management
 
@@ -196,6 +196,5 @@ ACCESS_TOKEN_AGE=900
 
 This project is actively being developed. Features currently in progress:
 
-- `GET /api/me/rooms` — owner dashboard (view and manage own rooms)
 - Tenant management
 - Payment management

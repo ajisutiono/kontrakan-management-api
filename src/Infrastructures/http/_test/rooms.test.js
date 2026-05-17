@@ -1,4 +1,4 @@
-import { afterAll, afterEach, describe, expect, it } from 'vitest'
+import { afterAll, afterEach, beforeEach, describe, expect, it } from 'vitest'
 import request from 'supertest'
 import bcrypt from 'bcrypt'
 import { randomUUID } from 'crypto'
@@ -1141,5 +1141,564 @@ Edge Case
 
       expect(response.body.meta.pagination.total).toBe(1)
     })
+  })
+
+  describe('when GET /api/me/rooms', () => {
+    // AUTHENTICATION
+    describe('authentication', () => {
+    // 1. should response 401 when no access token provided
+      it('should response 401 when no access token provided', async() => {
+
+        const response = await request(server)
+          .get('/api/me/rooms')
+
+        expect(response.status).toBe(401)
+      })
+
+      // 2. should response 401 when access token is invalid
+      it('should response 401 when access token is invalid', async() => {
+        const response = await request(server)
+          .get('/api/me/rooms')
+          .set('Authorization', 'Bearer invalid_token')
+
+        expect(response.status).toBe(401)        
+      })
+    })
+
+    // AUTHORIZATION
+    describe('authorization', () => {
+    // 3. should response 403 when role is tenant
+    //    - login sebagai tenant
+    //    - assert: 403
+      it('should response 403 when role is tenant', async() => {
+        const hashedPassword = await bcrypt.hash('Password1!', 10)
+
+        await UsersTableTestHelper.addUser({
+          name: 'Tenant Name',
+          email: 'tenant@mail.com',
+          password: hashedPassword,
+          role: 'tenant',
+        })
+
+        const loginResponse = await request(server)
+          .post('/api/authentications')
+          .send({ email: 'tenant@mail.com', password: 'Password1!' })
+
+        
+        const { accessToken } = loginResponse.body.data
+
+        const response = await request(server)
+          .get('/api/me/rooms')
+          .set('Authorization', `Bearer ${accessToken}`)
+
+        expect(response.status).toBe(403)
+      })
+    })
+
+    describe('success response', () => {
+    // 4. should response 200 and return all rooms (available + booked) for owner
+    //    - seed: 2 available + 1 booked milik owner yang login
+    //    - assert: dapat 3 room
+    //    - assert: ada yang status 'booked' (berbeda dengan public endpoint)
+      it('should response 200 and return all rooms (available + booked) for owner', async() => {
+        const ownerId = randomUUID()
+        const hashedPassword = await bcrypt.hash('Password1!', 10)
+
+        await UsersTableTestHelper.addUser({
+          id: ownerId,
+          name: 'Owner Name',
+          email: 'owner@mail.com',
+          password: hashedPassword,
+          role: 'owner',
+        })
+
+
+        await RoomsTableTestHelper.addRoom({ 
+          owner_id: ownerId,
+          room_number: '01',
+          type: '30/60',
+          price: 300000,
+          status: 'available'
+        })
+
+        await RoomsTableTestHelper.addRoom({ 
+          owner_id: ownerId,
+          room_number: '02',
+          type: '30/60',
+          price: 300000,
+          status: 'booked'
+        })
+
+        await RoomsTableTestHelper.addRoom({ 
+          owner_id: ownerId,
+          room_number: '03',
+          type: '30/60',
+          price: 300000,
+          status: 'available'
+        })
+
+        const loginResponse = await request(server)
+          .post('/api/authentications')
+          .send({ email: 'owner@mail.com', password: 'Password1!' })
+
+        
+        const { accessToken } = loginResponse.body.data
+
+        const response = await request(server)
+          .get('/api/me/rooms')
+          .set('Authorization', `Bearer ${accessToken}`)
+
+        expect(response.status).toBe(200)
+        expect(response.body.data).toHaveLength(3)
+
+        expect(response.body.meta.pagination.page).toBe(1)
+        expect(response.body.meta.pagination.limit).toBe(10)
+        expect(response.body.meta.pagination.total).toBe(3)
+        expect(response.body.meta.pagination.totalPages).toBe(1)        
+      })
+
+      // 5. should response 200 and return only own rooms, not other owner's rooms
+      //    - seed: owner_A punya 2 rooms, owner_B punya 2 rooms
+      //    - login sebagai owner_A
+      //    - assert: hanya dapat 2 room milik owner_A
+      //    - poin: ownerId dari JWT, bukan query
+      it('should response 200 and return only own rooms', async() => {
+        const owner_A = randomUUID()
+
+        await UsersTableTestHelper.addUser({ id: owner_A, role: 'owner'})
+
+        // room's owner_A
+        await RoomsTableTestHelper.addRoom({ 
+          owner_id: owner_A,
+          room_number: '01',
+          type: '30/60',
+          price: 300000,
+          status: 'available'
+        })
+
+        await RoomsTableTestHelper.addRoom({ 
+          owner_id: owner_A,
+          room_number: '02',
+          type: '30/60',
+          price: 300000,
+          status: 'booked'
+        })
+
+        const owner_B = randomUUID()
+
+        const hashedPassword = await bcrypt.hash('Password1!', 10)
+
+        await UsersTableTestHelper.addUser({
+          id: owner_B,
+          name: 'Owner B',
+          email: 'ownerB@mail.com',
+          password: hashedPassword,
+          role: 'owner',
+        })
+
+
+        // room's owner_B
+        await RoomsTableTestHelper.addRoom({ 
+          owner_id: owner_B,
+          room_number: '01',
+          type: '30/60',
+          price: 300000,
+          status: 'booked'
+        })
+
+        await RoomsTableTestHelper.addRoom({ 
+          owner_id: owner_B,
+          room_number: '02',
+          type: '30/60',
+          price: 300000,
+          status: 'booked'
+        })
+
+        const loginResponse = await request(server)
+          .post('/api/authentications')
+          .send({ email: 'ownerB@mail.com', password: 'Password1!' })
+
+        
+        const { accessToken } = loginResponse.body.data
+
+        const response = await request(server)
+          .get('/api/me/rooms')
+          .set('Authorization', `Bearer ${accessToken}`)
+
+        expect(response.status).toBe(200)
+        expect(response.body.data).toHaveLength(2)
+
+
+        response.body.data.forEach((room) => {
+          expect(room.status).toBe('booked')
+        })
+        expect(response.body.meta.pagination.page).toBe(1)
+        expect(response.body.meta.pagination.limit).toBe(10)
+        expect(response.body.meta.pagination.total).toBe(2)
+        expect(response.body.meta.pagination.totalPages).toBe(1)        
+      })
+    })
+
+
+    // FILTERING
+
+    describe('filtering', () => {
+      // Setup shared beforeEach:
+      // - owner yang login punya:
+      //   - room harga 200.000 status available  → room_01
+      //   - room harga 500.000 status available  → room_02
+      //   - room harga 300.000 status booked     → room_03
+      //   - room harga 400.000 status booked     → room_04
+
+      let accessToken
+      let ownerId
+
+      beforeEach(async () => {
+        ownerId = randomUUID()
+        const hashedPassword = await bcrypt.hash('Password1!', 10)
+
+        await UsersTableTestHelper.addUser({
+          id: ownerId,
+          name: 'Owner Name',
+          email: 'owner@mail.com',
+          password: hashedPassword,
+          role: 'owner',
+        })
+
+        await RoomsTableTestHelper.addRoom({
+          owner_id: ownerId,
+          room_number: '01',
+          price: 200000,
+          status: 'available',
+        })
+
+        await RoomsTableTestHelper.addRoom({
+          owner_id: ownerId,
+          room_number: '02',
+          price: 500000,
+          status: 'available',
+        })
+
+        await RoomsTableTestHelper.addRoom({
+          owner_id: ownerId,
+          room_number: '03',
+          price: 300000,
+          status: 'booked',
+        })
+
+        await RoomsTableTestHelper.addRoom({
+          owner_id: ownerId,
+          room_number: '04',
+          price: 400000,
+          status: 'booked',
+        })
+
+        const loginResponse = await request(server)
+          .post('/api/authentications')
+          .send({ email: 'owner@mail.com', password: 'Password1!' })
+
+        accessToken = loginResponse.body.data.accessToken
+      })
+
+      // 6. should return only available rooms when filter status=available
+      //    - query: ?status=available
+      //    - assert: data.length === 2, semua status 'available'
+
+      it('should return only available rooms when filter status is available', async() => {
+        const response = await request(server)
+          .get('/api/me/rooms?status=available')
+          .set('Authorization', `Bearer ${accessToken}`)
+
+        expect(response.status).toBe(200)
+        expect(response.body.data).toHaveLength(2)
+
+
+        response.body.data.forEach((room) => {
+          expect(room.status).toBe('available')
+        })
+        expect(response.body.meta.pagination.page).toBe(1)
+        expect(response.body.meta.pagination.limit).toBe(10)
+        expect(response.body.meta.pagination.total).toBe(2)
+        expect(response.body.meta.pagination.totalPages).toBe(1)       
+      })
+
+      // 7. should return only booked rooms when filter status=booked
+      //    - query: ?status=booked
+      //    - assert: data.length === 2, semua status 'booked'
+      it('should return only booked rooms when filter status is booked', async() => {
+        const response = await request(server)
+          .get('/api/me/rooms?status=booked')
+          .set('Authorization', `Bearer ${accessToken}`)
+
+        expect(response.status).toBe(200)
+        expect(response.body.data).toHaveLength(2)
+
+
+        response.body.data.forEach((room) => {
+          expect(room.status).toBe('booked')
+        })
+        expect(response.body.meta.pagination.page).toBe(1)
+        expect(response.body.meta.pagination.limit).toBe(10)
+        expect(response.body.meta.pagination.total).toBe(2)
+        expect(response.body.meta.pagination.totalPages).toBe(1)       
+      })
+
+      // 8. should return rooms filtered by minPrice
+      //    - query: ?minPrice=400000
+      //    - assert: data.length === 2 (500k available + 400k booked)
+      //    - assert: semua price >= 400000
+      it('should return rooms filtered by minPrice', async() => {
+        const response = await request(server)
+          .get('/api/me/rooms?minPrice=400000')
+          .set('Authorization', `Bearer ${accessToken}`)
+
+        expect(response.status).toBe(200)
+        expect(response.body.data).toHaveLength(2)
+
+        response.body.data.forEach((room) => {
+          expect(room.price).toBeGreaterThanOrEqual(400000)
+        })
+
+        expect(response.body.data).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({ status: 'available', price: 500000 }),
+            expect.objectContaining({ status: 'booked', price: 400000 }),
+          ])
+        )
+
+        expect(response.body.data).not.toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({ status: 'booked', price: 300000 }),
+            expect.objectContaining({ status: 'available', price: 200000 }),
+          ])
+        )
+        
+        expect(response.body.meta.pagination.page).toBe(1)
+        expect(response.body.meta.pagination.limit).toBe(10)
+        expect(response.body.meta.pagination.total).toBe(2)
+        expect(response.body.meta.pagination.totalPages).toBe(1)       
+      })
+
+      // 9. should return rooms filtered by maxPrice
+      //    - query: ?maxPrice=300000
+      //    - assert: data.length === 2 (200k available + 300k booked)
+      //    - assert: semua price <= 300000
+      it('should return rooms filtered by maxPrice', async() => {
+        const response = await request(server)
+          .get('/api/me/rooms?maxPrice=300000')
+          .set('Authorization', `Bearer ${accessToken}`)
+
+        expect(response.status).toBe(200)
+        expect(response.body.data).toHaveLength(2)
+
+        response.body.data.forEach((room) => {
+          expect(room.price).toBeLessThanOrEqual(300000)
+        })
+
+        expect(response.body.data).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({ status: 'booked', price: 300000 }),
+            expect.objectContaining({ status: 'available', price: 200000 }),
+          ])
+        )
+
+        expect(response.body.data).not.toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({ status: 'available', price: 500000 }),
+            expect.objectContaining({ status: 'booked', price: 400000 }),
+          ])
+        )
+        
+        expect(response.body.meta.pagination.page).toBe(1)
+        expect(response.body.meta.pagination.limit).toBe(10)
+        expect(response.body.meta.pagination.total).toBe(2)
+        expect(response.body.meta.pagination.totalPages).toBe(1)       
+      })
+
+      // 10. should return rooms filtered by minPrice and maxPrice
+      //     - query: ?minPrice=300000&maxPrice=450000
+      //     - assert: data.length === 2 (300k booked + 400k booked)
+      //     - assert: semua price dalam rentang
+
+      it('should return rooms filtered by minPrice and maxPrice', async() => {
+        const response = await request(server)
+          .get('/api/me/rooms?minPrice=300000&maxPrice=450000')
+          .set('Authorization', `Bearer ${accessToken}`)
+
+        expect(response.status).toBe(200)
+        expect(response.body.data).toHaveLength(2)
+
+        response.body.data.forEach((room) => {
+          expect(room.price).toBeGreaterThanOrEqual(300000)
+          expect(room.price).toBeLessThanOrEqual(450000)
+        })
+
+        expect(response.body.data).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({ status: 'booked', price: 300000 }),
+            expect.objectContaining({ status: 'booked', price: 400000 }),
+          ])
+        )
+
+        expect(response.body.data).not.toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({ status: 'available', price: 500000 }),
+            expect.objectContaining({ status: 'available', price: 200000 }),
+          ])
+        )
+        
+        expect(response.body.meta.pagination.page).toBe(1)
+        expect(response.body.meta.pagination.limit).toBe(10)
+        expect(response.body.meta.pagination.total).toBe(2)
+        expect(response.body.meta.pagination.totalPages).toBe(1)       
+      })
+
+      // 11. should not be able to filter by other owner's rooms via ownerId query
+      //     - seed: owner_B punya 1 room
+      //     - query: ?ownerId=${owner_B}  ← coba inject dari luar
+      //     - assert: tetap dapat room milik owner yang login (ownerId dari JWT menang)
+      //     - poin: ini security test — ownerId dari JWT tidak bisa di-override
+
+      it('should not be able to filter by other owners rooms via ownerId query', async () => {
+        const owner_B = randomUUID()
+
+        await UsersTableTestHelper.addUser({
+          id: owner_B,
+          role: 'owner',
+        })
+
+        await RoomsTableTestHelper.addRoom({
+          owner_id: owner_B,
+          room_number: '01',
+          price: 200000,
+          status: 'available',
+        })
+
+        const response = await request(server)
+          .get(`/api/me/rooms?ownerId=${owner_B}`)
+          .set('Authorization', `Bearer ${accessToken}`)
+
+        expect(response.status).toBe(200)
+        expect(response.body.data).toHaveLength(4)
+
+        response.body.data.forEach((room) => {
+          expect(room.owner_id).toBe(ownerId) 
+          expect(room.owner_id).not.toBe(owner_B)
+        })
+
+        expect(response.body.meta.pagination.total).toBe(4)
+      })
+    })
+
+
+    // PAGINATION
+
+    // Setup shared beforeEach:
+    // - owner yang login punya 5 rooms (mix available + booked)
+
+    // 12. should return rooms limited by `limit` param
+    //     - query: ?limit=2
+    //     - assert: data.length === 2
+
+    // 13. should return correct rooms on page 2
+    //     - query: ?page=2&limit=2
+    //     - assert: data.length === 2, tidak overlap dengan page 1
+
+    // 14. should return correct pagination metadata
+    //     - query: ?page=1&limit=2
+    //     - assert: { page: 1, limit: 2, total: 5, totalPages: 3 }
+
+    // 15. should return empty data when page exceeds total
+    //     - query: ?page=99&limit=10
+    //     - assert: data.length === 0, total === 5
+    describe('pagination', () => {
+      let accessToken
+      let ownerId
+
+      beforeEach(async () => {
+        ownerId = randomUUID()
+        const hashedPassword = await bcrypt.hash('Password1!', 10)
+
+        await UsersTableTestHelper.addUser({
+          id: ownerId,
+          name: 'Owner Name',
+          email: 'owner@mail.com',
+          password: hashedPassword,
+          role: 'owner',
+        })
+
+        await RoomsTableTestHelper.addRoom({ owner_id: ownerId, room_number: '01', price: 100000, status: 'available' })
+        await RoomsTableTestHelper.addRoom({ owner_id: ownerId, room_number: '02', price: 200000, status: 'available' })
+        await RoomsTableTestHelper.addRoom({ owner_id: ownerId, room_number: '03', price: 300000, status: 'booked' })
+        await RoomsTableTestHelper.addRoom({ owner_id: ownerId, room_number: '04', price: 400000, status: 'booked' })
+        await RoomsTableTestHelper.addRoom({ owner_id: ownerId, room_number: '05', price: 500000, status: 'available' })
+
+        const loginResponse = await request(server)
+          .post('/api/authentications')
+          .send({ email: 'owner@mail.com', password: 'Password1!' })
+
+        accessToken = loginResponse.body.data.accessToken
+      })
+
+      // 12.
+      it('should return rooms limited by limit param', async () => {
+        const response = await request(server)
+          .get('/api/me/rooms?limit=2')
+          .set('Authorization', `Bearer ${accessToken}`)
+
+        expect(response.status).toBe(200)
+        expect(response.body.data).toHaveLength(2)
+      })
+
+      // 13.
+      it('should return correct rooms on page 2', async () => {
+        const page1 = await request(server)
+          .get('/api/me/rooms?page=1&limit=2')
+          .set('Authorization', `Bearer ${accessToken}`)
+
+        const page2 = await request(server)
+          .get('/api/me/rooms?page=2&limit=2')
+          .set('Authorization', `Bearer ${accessToken}`)
+
+        expect(page2.status).toBe(200)
+        expect(page2.body.data).toHaveLength(2)
+
+        const page1Ids = page1.body.data.map((room) => room.id)
+        const page2Ids = page2.body.data.map((room) => room.id)
+
+        // tidak ada id yang overlap antara page 1 dan page 2
+        page2Ids.forEach((id) => {
+          expect(page1Ids).not.toContain(id)
+        })
+      })
+
+      // 14.
+      it('should return correct pagination metadata', async () => {
+        const response = await request(server)
+          .get('/api/me/rooms?page=1&limit=2')
+          .set('Authorization', `Bearer ${accessToken}`)
+
+        expect(response.status).toBe(200)
+        expect(response.body.meta.pagination).toEqual({
+          page: 1,
+          limit: 2,
+          total: 5,
+          totalPages: 3,
+        })
+      })
+
+      // 15.
+      it('should return empty data when page exceeds total', async () => {
+        const response = await request(server)
+          .get('/api/me/rooms?page=99&limit=10')
+          .set('Authorization', `Bearer ${accessToken}`)
+
+        expect(response.status).toBe(200)
+        expect(response.body.data).toHaveLength(0)
+        expect(response.body.meta.pagination.total).toBe(5)
+        expect(response.body.meta.pagination.totalPages).toBe(1)
+      })
+    })
+
   })
 })

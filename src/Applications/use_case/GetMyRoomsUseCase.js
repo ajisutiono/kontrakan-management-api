@@ -1,6 +1,6 @@
 import AuthorizationError from '../../Commons/exceptions/AuthorizationError.js'
 
-class GetMyRoomUseCase {
+class GetMyRoomsUseCase {
   constructor({ roomRepository }) {
     this._roomRepository = roomRepository
   }
@@ -20,4 +20,4 @@ class GetMyRoomUseCase {
   }
 }
 
-export default GetMyRoomUseCase
+export default GetMyRoomsUseCase

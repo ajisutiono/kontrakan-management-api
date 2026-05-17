@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest'
 
 import RoomRepository from '../../../Domains/rooms/RoomRepository.js'
-import GetMyRoomUseCase from '../GetMyRoomUseCase.js'
+import GetMyRoomsUseCase from '../GetMyRoomsUseCase.js'
 import AuthorizationError from '../../../Commons/exceptions/AuthorizationError.js'
 
 describe('GetMyRoomUseCase', () => {
@@ -24,7 +24,7 @@ describe('GetMyRoomUseCase', () => {
     mockRoomRepository.getRooms = vi.fn().mockResolvedValue(mockResult)
 
 
-    const getMyRoomsUseCase = new GetMyRoomUseCase({
+    const getMyRoomsUseCase = new GetMyRoomsUseCase({
       roomRepository: mockRoomRepository,
     })
 
@@ -51,7 +51,7 @@ describe('GetMyRoomUseCase', () => {
       userRole: 'tenant',
     }
 
-    const useCase = new GetMyRoomUseCase({
+    const useCase = new GetMyRoomsUseCase({
       roomRepository: {},
     })
 
@@ -72,7 +72,7 @@ describe('GetMyRoomUseCase', () => {
     const mockRoomRepository = new RoomRepository()
     mockRoomRepository.getRooms = vi.fn().mockResolvedValue({})
 
-    const useCase = new GetMyRoomUseCase({
+    const useCase = new GetMyRoomsUseCase({
       roomRepository: mockRoomRepository,
     })
 

@@ -1,9 +1,9 @@
-import MyRoomsController from './controller'
-import createMyRoomRouter from './route'
+import MyRoomsController from './controller.js'
+import createMyRoomsRouter from './route.js'
 
-const createMyRoomApi = (container) => {
+const createMyRoomsApi = (container) => {
   const controller = new MyRoomsController(container)
-  return createMyRoomRouter(controller, container)
+  return createMyRoomsRouter(controller, container)
 }
 
-export default createMyRoomApi
+export default createMyRoomsApi

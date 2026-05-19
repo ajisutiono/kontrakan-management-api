@@ -7,6 +7,10 @@ class RoomRepository {
   async getRooms({ filters, page, limit, userRole }) {
     throw new Error('ROOM_REPOSITORY.METHOD_NOT_IMPLEMENTED')
   }
+
+  async getRoomById(roomId) {
+    throw new Error('ROOM_REPOSITORY.METHOD_NOT_IMPLEMENTED')
+  }
 }
 
 export default RoomRepository

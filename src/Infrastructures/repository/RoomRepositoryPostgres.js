@@ -1,6 +1,7 @@
 import { randomUUID } from 'crypto'
 
 import RoomRepository from '../../Domains/rooms/RoomRepository.js'
+import NotFoundError from '../../Commons/exceptions/NotFoundError.js'
 
 class RoomRepositoryPostgres extends RoomRepository {
   /* istanbul ignore next */
@@ -94,6 +95,21 @@ class RoomRepositoryPostgres extends RoomRepository {
       total,
       totalPages: total > 0 ? Math.ceil(total / limit) : 0,
     }
+  }
+
+  async getRoomById(roomId) {
+    const query = {
+      text: 'SELECT * FROM rooms WHERE id = $1',
+      values: [roomId]
+    }
+
+    const result = await this._pool.query(query)
+
+    if(!result.rows[0]) {
+      throw new NotFoundError('id room not found')
+    }
+
+    return result.rows[0]
   }
 }
 

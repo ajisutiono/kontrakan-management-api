@@ -5,6 +5,7 @@ import pool from '../../database/postgres/pool.js'
 import RoomRepositoryPostgres from '../RoomRepositoryPostgres.js'
 import RoomsTableTestHelper from '../../../../tests/RoomsTableTestHelper.js'
 import UsersTableTestHelper from '../../../../tests/UsersTableTestHelper.js'
+import NotFoundError from '../../../Commons/exceptions/NotFoundError.js'
 
 describe('RoomRepositoryPostgres', () => {
   afterEach(async () => {
@@ -321,5 +322,37 @@ describe('RoomRepositoryPostgres', () => {
       expect(result.data).toHaveLength(0)
     })
 
+  })
+
+  describe('getRoomById', () => {
+    it('should persist room by id correctly', async() => {
+      const ownerId = randomUUID()
+      const roomId = randomUUID()
+
+      await UsersTableTestHelper.addUser({ id: ownerId })
+
+      await RoomsTableTestHelper.addRoom({
+        id: roomId,
+        owner_id: ownerId,
+        room_number: '01',
+      })
+
+      const repository = new RoomRepositoryPostgres({ pool })
+
+      const result = await repository.getRoomById(roomId)
+
+      expect(result).toHaveProperty('id', roomId)
+      expect(result).toHaveProperty('owner_id', ownerId)
+      expect(result).toHaveProperty('room_number', '01')
+    })
+
+    it('should throw NotFoundError when room not found', async () => {
+      const roomId = randomUUID()
+
+      const repository = new RoomRepositoryPostgres({ pool })
+
+      await expect(repository.getRoomById(roomId))
+        .rejects.toThrow(NotFoundError)
+    })
   })
 })

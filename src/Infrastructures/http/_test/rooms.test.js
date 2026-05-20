@@ -1701,4 +1701,96 @@ Edge Case
     })
 
   })
+
+  describe('when GET /api/rooms/:id', () => {
+    describe('authentication', () => {
+      it('should response 401 when no access token provided', async() => {
+        const response = await request(server)
+          .get('/api/rooms/1')
+
+        expect(response.status).toBe(401)
+      })
+
+      it('should response 401 when access token is invalid', async() => {
+        const response = await request(server)
+          .get('/api/rooms/1')
+          .set('Authorization', 'Bearer invalid_token')
+
+        expect(response.status).toBe(401)  
+      })
+    })
+
+    describe('success response', () => {
+      it('should response 200 and return room detail when room exists', async() => {
+        const hashedPassword = await bcrypt.hash('Password1!', 10)
+
+        const ownerId = randomUUID()
+        const roomId = randomUUID()
+
+        await UsersTableTestHelper.addUser({
+          id: ownerId,
+          name: 'Owner A',
+          email: `${ownerId}@mail.com`,
+          password: hashedPassword,
+          role: 'owner',
+        })
+ 
+        // rooms 
+        await RoomsTableTestHelper.addRoom({
+          id: roomId, 
+          owner_id: ownerId,
+          room_number: '01',
+          type: '30/60',
+          price: 300000,
+          status: 'available'
+        })
+
+        const loginResponse = await request(server)
+          .post('/api/authentications')
+          .send({ email: `${ownerId}@mail.com`, password: 'Password1!' })
+
+        const { accessToken } = loginResponse.body.data
+
+        const response = await request(server)
+          .get(`/api/rooms/${roomId}`)
+          .set('Authorization', `Bearer ${accessToken}`)
+
+        expect(response.status).toBe(200)
+        expect(response.body.status).toBe('success')
+        expect(response.body.data.id).toBe(roomId)
+        expect(response.body.data.owner_id).toBe(ownerId)
+        expect(response.body.data.room_number).toBe('01')
+        expect(response.body.data.status).toBe('available')
+      })
+    })
+
+    describe('failed response', () => {
+      it('should response 404 when room id does not exist', async() => {
+        const hashedPassword = await bcrypt.hash('Password1!', 10)
+
+        const ownerId = randomUUID()
+        const fakeRoomId = randomUUID()
+
+        await UsersTableTestHelper.addUser({
+          id: ownerId,
+          name: 'Owner A',
+          email: `${ownerId}@mail.com`,
+          password: hashedPassword,
+          role: 'owner',
+        })
+
+        const loginResponse = await request(server)
+          .post('/api/authentications')
+          .send({ email: `${ownerId}@mail.com`, password: 'Password1!' })
+
+        const { accessToken } = loginResponse.body.data
+
+        const response = await request(server)
+          .get(`/api/rooms/${fakeRoomId}`)
+          .set('Authorization', `Bearer ${accessToken}`)
+
+        expect(response.status).toBe(404)
+      })
+    })
+  })
 })

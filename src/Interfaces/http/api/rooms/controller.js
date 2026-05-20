@@ -50,6 +50,20 @@ class RoomsController {
       }
     })
   })
+
+  getRoomById = asyncHandler(async (req, res) => {
+    const { id } = req.params
+
+    const getRoomUseCase = this._container.resolve('getRoomUseCase')
+
+    const result = await getRoomUseCase.execute(id)
+
+    res.json({
+      status: 'success',
+      data: result,
+    })
+
+  })
 }
 
 export default RoomsController

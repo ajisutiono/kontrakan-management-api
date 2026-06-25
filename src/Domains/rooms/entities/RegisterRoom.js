@@ -19,7 +19,7 @@ class RegisterRoom {
         || typeof room_number !== 'string'
         || typeof type !== 'string'
         || typeof price !== 'number'
-        || (facilities !== undefined && typeof facilities !== 'object')
+        || ((facilities !== undefined && !Array.isArray(facilities)))
     ) {
       throw new Error('REGISTER_ROOM.NOT_MEET_DATA_TYPE_SPECIFICATION')
     }

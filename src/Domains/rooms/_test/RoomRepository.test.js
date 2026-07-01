@@ -20,4 +20,9 @@ describe('RoomRepository abstract methods', () => {
   it('getRoomById should throw METHOD_NOT_IMPLEMENTED', async () => {
     await expect(repository.getRoomById({})).rejects.toThrowError('ROOM_REPOSITORY.METHOD_NOT_IMPLEMENTED')
   })
+
+  it('updateRoomById should throw METHOD_NOT_IMPLEMENTED', async () => {
+    await expect(repository.updateRoomById('room-123', {}))
+      .rejects.toThrowError('ROOM_REPOSITORY.METHOD_NOT_IMPLEMENTED')
+  })
 })

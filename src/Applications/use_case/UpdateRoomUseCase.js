@@ -13,7 +13,7 @@ class UpdateRoomUseCase {
 
     const updateRoom = new UpdateRoom(payload)
 
-    const existingRoom = await this._roomRepository.getRoomById(updateRoom)
+    const existingRoom = await this._roomRepository.getRoomById(roomId)
 
     if(existingRoom.owner_id !== ownerId) {
       throw new AuthorizationError('Anda tidak memiliki akses untuk mengedit kamar ini')

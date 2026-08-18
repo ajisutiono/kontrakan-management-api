@@ -12,7 +12,7 @@ class RoomRepository {
     throw new Error('ROOM_REPOSITORY.METHOD_NOT_IMPLEMENTED')
   }
 
-  async updateRoomById(room) {
+  async updateRoomById(roomId, updateRoom) {
     throw new Error('ROOM_REPOSITORY.METHOD_NOT_IMPLEMENTED')
   }
 }

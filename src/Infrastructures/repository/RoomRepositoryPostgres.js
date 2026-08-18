@@ -105,11 +105,63 @@ class RoomRepositoryPostgres extends RoomRepository {
 
     const result = await this._pool.query(query)
 
-    if(!result.rows[0]) {
+    if (!result.rows[0]) {
       throw new NotFoundError('id room not found')
     }
 
     return result.rows[0]
+  }
+
+  async updateRoomById(roomId, updateRoom) {
+    const { room_number, type, price, facilities, status } = updateRoom
+
+    const setClauses = []
+    const values = []
+
+    if (room_number !== undefined) {
+      values.push(room_number)
+      setClauses.push(`room_number = $${values.length}`)
+    }
+
+    if (type !== undefined) {
+      values.push(type)
+      setClauses.push(`type = $${values.length}`)
+    }
+
+    if (price !== undefined) {
+      values.push(price)
+      setClauses.push(`price = $${values.length}`)
+    }
+
+    if (facilities !== undefined) {
+      values.push(JSON.stringify(facilities))
+      setClauses.push(`facilities = $${values.length}`)
+    }
+
+    if (status !== undefined) {
+      values.push(status)
+      setClauses.push(`status = $${values.length}`)
+    }
+
+    setClauses.push('updated_at = NOW()')
+
+    values.push(roomId)
+
+    const query = {
+      text: `UPDATE rooms
+                   SET ${setClauses.join(', ')}
+                   WHERE id = $${values.length}
+                   RETURNING id, owner_id, room_number, type, price, facilities, status, updated_at`,
+      values,
+    }
+    const result = await this._pool.query(query)
+    const row = result.rows[0]
+
+    return {
+      ...row,
+      price: Number(row.price),
+      facilities: row.facilities ?? null,
+    }
   }
 }
 

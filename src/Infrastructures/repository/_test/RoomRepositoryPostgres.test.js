@@ -1,5 +1,5 @@
 import { randomUUID } from 'crypto'
-import { afterAll, afterEach, describe, expect, it, vi } from 'vitest'
+import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import pool from '../../database/postgres/pool.js'
 import RoomRepositoryPostgres from '../RoomRepositoryPostgres.js'
@@ -88,13 +88,13 @@ describe('RoomRepositoryPostgres', () => {
 
       await UsersTableTestHelper.addUser({ id: ownerId, role: 'owner' })
 
-      await RoomsTableTestHelper.addRoom({ 
+      await RoomsTableTestHelper.addRoom({
         owner_id: ownerId,
         room_number: '01',
         status: 'available'
       })
 
-      await RoomsTableTestHelper.addRoom({ 
+      await RoomsTableTestHelper.addRoom({
         owner_id: ownerId,
         room_number: '02',
         status: 'booked'
@@ -325,7 +325,7 @@ describe('RoomRepositoryPostgres', () => {
   })
 
   describe('getRoomById', () => {
-    it('should persist room by id correctly', async() => {
+    it('should persist room by id correctly', async () => {
       const ownerId = randomUUID()
       const roomId = randomUUID()
 
@@ -354,5 +354,169 @@ describe('RoomRepositoryPostgres', () => {
       await expect(repository.getRoomById(roomId))
         .rejects.toThrow(NotFoundError)
     })
+  })
+
+  describe('updateRoomById', () => {
+    let ownerId
+    let roomId
+
+    beforeEach(async () => {
+      ownerId = randomUUID()
+      roomId = randomUUID()
+
+      await UsersTableTestHelper.addUser({
+        id: ownerId,
+        role: 'owner',
+      })
+
+      await RoomsTableTestHelper.addRoom({
+        id: roomId,
+        owner_id: ownerId,
+        room_number: '01',
+        type: '36/60',
+        price: 250000,
+        facilities: ['bed', 'bathroom'],
+        status: 'available'
+      })
+    })
+
+    /*
+         1. should update room_number only
+            - seed room dengan room_number '01'
+            - update hanya room_number → '02'
+            - assert: room_number berubah jadi '02'
+            - assert: field lain (type, price, status) tidak berubah
+    */
+    it('should update room_number only', async () => {
+      const repository = new RoomRepositoryPostgres({ pool })
+
+      const result = await repository.updateRoomById(roomId, { room_number: '02' })
+
+      expect(result).toHaveProperty('room_number', '02')
+      expect(result).toHaveProperty('type', '36/60')        // tidak berubah
+      expect(result).toHaveProperty('price', 250000)   // tidak berubah
+      expect(result).toHaveProperty('status', 'available')  // tidak berubah
+      expect(result).toHaveProperty('facilities', ['bed', 'bathroom'])  // tidak berubah
+    })
+
+    /*  2. should update type only 
+        - seed room dengan type 36/60
+        - update hanya type → 36/72
+        - assert: type berubah jadi 36/72
+        - assert: field lain tidak berubah 
+    */
+
+    it('should update type only', async () => {
+      const repository = new RoomRepositoryPostgres({ pool })
+
+      const result = await repository.updateRoomById(roomId, { type: '36/72' })
+
+      expect(result).toHaveProperty('room_number', '01') // tidak berubah
+      expect(result).toHaveProperty('type', '36/72')
+      expect(result).toHaveProperty('price', 250000)   // tidak berubah
+      expect(result).toHaveProperty('status', 'available')  // tidak berubah
+      expect(result).toHaveProperty('facilities', ['bed', 'bathroom'])  // tidak berubah
+
+    })
+
+    /*  3. should update price only 
+        - seed room dengan price 250000
+        - update hanya price → 500000
+        - assert: price berubah jadi 500000
+        - assert: field lain tidak berubah 
+    */
+    it('should update price only', async () => {
+      const repository = new RoomRepositoryPostgres({ pool })
+
+      const result = await repository.updateRoomById(roomId, { price: 500000 })
+
+      expect(result).toHaveProperty('room_number', '01') // tidak berubah
+      expect(result).toHaveProperty('type', '36/60')    // tidak berubah
+      expect(result).toHaveProperty('price', 500000)
+      expect(result).toHaveProperty('status', 'available')  // tidak berubah
+      expect(result).toHaveProperty('facilities', ['bed', 'bathroom'])  // tidak berubah
+    })
+
+    /*   4. should update status only
+         - seed room dengan status 'available'
+         - update hanya status → 'booked'
+         - assert: status berubah jadi 'booked' 
+    */
+
+    it('should update status only', async () => {
+      const repository = new RoomRepositoryPostgres({ pool })
+
+      const result = await repository.updateRoomById(roomId, { status: 'booked' })
+
+      expect(result).toHaveProperty('room_number', '01') // tidak berubah
+      expect(result).toHaveProperty('type', '36/60')     // tidak berubah
+      expect(result).toHaveProperty('price', 250000)   // tidak berubah
+      expect(result).toHaveProperty('status', 'booked')
+      expect(result).toHaveProperty('facilities', ['bed', 'bathroom'])  // tidak berubah
+    })
+
+    /*   5. should update facilities only
+         - seed room tanpa facilities
+         - update hanya facilities → ['AC', 'bathroom']
+         - assert: facilities berubah 
+    */
+    it('should update facilities only', async () => {
+      const repository = new RoomRepositoryPostgres({ pool })
+
+      const result = await repository.updateRoomById(roomId, { facilities: ['AC', 'bathroom'] })
+
+      expect(result).toHaveProperty('room_number', '01') // tidak berubah
+      expect(result).toHaveProperty('type', '36/60')     // tidak berubah
+      expect(result).toHaveProperty('price', 250000)   // tidak berubah
+      expect(result).toHaveProperty('status', 'available') // tidak berubah
+      expect(result).toHaveProperty('facilities', ['AC', 'bathroom'])
+    })
+
+    /*  6. should update multiple fields at once
+        - seed room dengan data awal
+        - update room_number, price, dan status sekaligus
+        - assert: semua field yang diupdate berubah
+        - assert: field yang tidak diupdate tetap sama 
+    */
+    it('should update multiple fields at once', async () => {
+      const repository = new RoomRepositoryPostgres({ pool })
+
+      const result = await repository.updateRoomById(roomId, {
+        room_number: '02',
+        price: 500000,
+        status: 'booked'
+      })
+
+      expect(result).toHaveProperty('room_number', '02')
+      expect(result).toHaveProperty('type', '36/60')
+      expect(result).toHaveProperty('price', 500000)
+      expect(result).toHaveProperty('status', 'booked')
+      expect(result).toHaveProperty('facilities', ['bed', 'bathroom'])
+    })
+
+    /*   6. should return correct fields after update
+         - assert: result mengandung id, owner_id, room_number, type, price, facilities, status, updated_at 
+    */
+
+    it('should return correct fields after update', async () => {
+      const repository = new RoomRepositoryPostgres({ pool })
+
+      const result = await repository.updateRoomById(roomId, {
+        room_number: '02',
+        type: '36/72',
+        price: 500000,
+        facilities: ['AC', 'bathroom'],
+        status: 'booked'
+      })
+
+      expect(result).toHaveProperty('room_number', '02')
+      expect(result).toHaveProperty('type', '36/72')
+      expect(result).toHaveProperty('price', 500000)
+      expect(result).toHaveProperty('status', 'booked')
+      expect(result).toHaveProperty('facilities', ['AC', 'bathroom'])
+      expect(result).toHaveProperty('updated_at')
+      expect(result.updated_at).toBeInstanceOf(Date)
+    })
+
   })
 })

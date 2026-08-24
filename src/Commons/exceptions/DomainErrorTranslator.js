@@ -27,6 +27,13 @@ const DomainErrorTranslator = {
     'REGISTER_ROOM.NOT_MEET_DATA_TYPE_SPECIFICATION': new InvariantError('tidak dapat membuat kamar baru karena tipe data tidak sesuai'),
     'REGISTER_ROOM.ROOM_NUMBER_TOO_LONG': new InvariantError('tidak dapat membuat kamar baru karena nomor kamar terlalu panjang'),
     'REGISTER_ROOM.TYPE_TOO_LONG': new InvariantError('tidak dapat membuat kamar baru karena type terlalu panjang'),
+
+    // UpdateRoom errors
+    'UPDATE_ROOM.NEED_AT_LEAST_ONE_PROPERTY': new InvariantError('tidak dapat mengupdate kamar karena tidak ada properti yang dikirim'),
+    'UPDATE_ROOM.NOT_MEET_DATA_TYPE_SPECIFICATION': new InvariantError('tidak dapat mengupdate kamar karena tipe data tidak sesuai'),
+    'UPDATE_ROOM.INVALID_STATUS': new InvariantError('tidak dapat mengupdate kamar karena status tidak valid'),
+    'UPDATE_ROOM.ROOM_NUMBER_TOO_LONG': new InvariantError('tidak dapat mengupdate kamar karena nomor kamar terlalu panjang'),
+    'UPDATE_ROOM.TYPE_TOO_LONG': new InvariantError('tidak dapat mengupdate kamar karena type terlalu panjang'),
   },
 
   translate(error) {

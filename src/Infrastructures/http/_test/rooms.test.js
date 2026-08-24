@@ -191,7 +191,7 @@ Edge Case
 
     describe('authentication', () => {
       // 1.
-      it('should response 401 when no access token provided', async() => {
+      it('should response 401 when no access token provided', async () => {
 
         const response = await request(server)
           .get('/api/rooms')
@@ -200,24 +200,24 @@ Edge Case
       })
 
       // 2.
-      it('should response 401 when access token is invalid', async() => {
+      it('should response 401 when access token is invalid', async () => {
         const response = await request(server)
           .get('/api/rooms')
           .set('Authorization', 'Bearer invalid_token')
 
-        expect(response.status).toBe(401)        
+        expect(response.status).toBe(401)
       })
     })
 
     describe('success response', () => {
       // 3.
-      it('should response 200 and return only available rooms for tenant', async() => {
+      it('should response 200 and return only available rooms for tenant', async () => {
         const ownerId = randomUUID()
 
         await UsersTableTestHelper.addUser({ id: ownerId, role: 'owner' })
 
 
-        await RoomsTableTestHelper.addRoom({ 
+        await RoomsTableTestHelper.addRoom({
           owner_id: ownerId,
           room_number: '01',
           type: '30/60',
@@ -225,7 +225,7 @@ Edge Case
           status: 'available'
         })
 
-        await RoomsTableTestHelper.addRoom({ 
+        await RoomsTableTestHelper.addRoom({
           owner_id: ownerId,
           room_number: '02',
           type: '30/60',
@@ -233,15 +233,15 @@ Edge Case
           status: 'booked'
         })
 
-        await RoomsTableTestHelper.addRoom({ 
+        await RoomsTableTestHelper.addRoom({
           owner_id: ownerId,
           room_number: '03',
           type: '30/60',
           price: 300000,
           status: 'available'
         })
-      
-       
+
+
 
         const hashedPassword = await bcrypt.hash('Password1!', 10)
 
@@ -256,7 +256,7 @@ Edge Case
           .post('/api/authentications')
           .send({ email: 'tenant@mail.com', password: 'Password1!' })
 
-        
+
         const { accessToken } = loginResponse.body.data
 
         const response = await request(server)
@@ -275,7 +275,7 @@ Edge Case
       })
 
       // 4.
-      it('should response 200 and return only available rooms for owner', async() => {
+      it('should response 200 and return only available rooms for owner', async () => {
         const ownerId = randomUUID()
         const hashedPassword = await bcrypt.hash('Password1!', 10)
 
@@ -288,7 +288,7 @@ Edge Case
         })
 
 
-        await RoomsTableTestHelper.addRoom({ 
+        await RoomsTableTestHelper.addRoom({
           owner_id: ownerId,
           room_number: '01',
           type: '30/60',
@@ -296,7 +296,7 @@ Edge Case
           status: 'available'
         })
 
-        await RoomsTableTestHelper.addRoom({ 
+        await RoomsTableTestHelper.addRoom({
           owner_id: ownerId,
           room_number: '02',
           type: '30/60',
@@ -304,7 +304,7 @@ Edge Case
           status: 'booked'
         })
 
-        await RoomsTableTestHelper.addRoom({ 
+        await RoomsTableTestHelper.addRoom({
           owner_id: ownerId,
           room_number: '03',
           type: '30/60',
@@ -316,7 +316,7 @@ Edge Case
           .post('/api/authentications')
           .send({ email: 'owner@mail.com', password: 'Password1!' })
 
-        
+
         const { accessToken } = loginResponse.body.data
 
         const response = await request(server)
@@ -334,7 +334,7 @@ Edge Case
       })
 
       // 5. 
-      it('should response 200 and return available rooms from multiple owners', async() => {
+      it('should response 200 and return available rooms from multiple owners', async () => {
         const hashedPassword = await bcrypt.hash('Password1!', 10)
 
         const ownerA = randomUUID()
@@ -348,7 +348,7 @@ Edge Case
           password: hashedPassword,
           role: 'owner',
         })
-        
+
         // ownerB
         await UsersTableTestHelper.addUser({
           id: ownerB,
@@ -360,7 +360,7 @@ Edge Case
 
 
         // rooms ownerA
-        await RoomsTableTestHelper.addRoom({ 
+        await RoomsTableTestHelper.addRoom({
           owner_id: ownerA,
           room_number: '01',
           type: '30/60',
@@ -368,7 +368,7 @@ Edge Case
           status: 'available'
         })
 
-        await RoomsTableTestHelper.addRoom({ 
+        await RoomsTableTestHelper.addRoom({
           owner_id: ownerA,
           room_number: '02',
           type: '30/60',
@@ -377,7 +377,7 @@ Edge Case
         })
 
         // rooms ownerB
-        await RoomsTableTestHelper.addRoom({ 
+        await RoomsTableTestHelper.addRoom({
           owner_id: ownerB,
           room_number: '01',
           type: '30/60',
@@ -385,7 +385,7 @@ Edge Case
           status: 'available'
         })
 
-        await RoomsTableTestHelper.addRoom({ 
+        await RoomsTableTestHelper.addRoom({
           owner_id: ownerB,
           room_number: '02',
           type: '30/60',
@@ -431,7 +431,7 @@ Edge Case
 
     describe('filtering', () => {
       // 6.
-      it('should response 200 and return available rooms filtered by ownerId', async() => {
+      it('should response 200 and return available rooms filtered by ownerId', async () => {
         const hashedPassword = await bcrypt.hash('Password1!', 10)
 
         const ownerA = randomUUID()
@@ -444,7 +444,7 @@ Edge Case
           password: hashedPassword,
           role: 'owner',
         })
- 
+
         await UsersTableTestHelper.addUser({
           id: ownerB,
           name: 'Owner B',
@@ -455,7 +455,7 @@ Edge Case
 
 
         // rooms ownerA
-        await RoomsTableTestHelper.addRoom({ 
+        await RoomsTableTestHelper.addRoom({
           owner_id: ownerA,
           room_number: '01',
           type: '30/60',
@@ -463,7 +463,7 @@ Edge Case
           status: 'available'
         })
 
-        await RoomsTableTestHelper.addRoom({ 
+        await RoomsTableTestHelper.addRoom({
           owner_id: ownerA,
           room_number: '02',
           type: '30/60',
@@ -472,7 +472,7 @@ Edge Case
         })
 
         // rooms ownerB
-        await RoomsTableTestHelper.addRoom({ 
+        await RoomsTableTestHelper.addRoom({
           owner_id: ownerB,
           room_number: '01',
           type: '30/60',
@@ -480,7 +480,7 @@ Edge Case
           status: 'available'
         })
 
-        await RoomsTableTestHelper.addRoom({ 
+        await RoomsTableTestHelper.addRoom({
           owner_id: ownerB,
           room_number: '02',
           type: '30/60',
@@ -516,7 +516,7 @@ Edge Case
       })
 
       // 7.
-      it('should response 200 and return available rooms filtered by minPrice', async() => {
+      it('should response 200 and return available rooms filtered by minPrice', async () => {
         const hashedPassword = await bcrypt.hash('Password1!', 10)
 
         const ownerA = randomUUID()
@@ -529,7 +529,7 @@ Edge Case
           password: hashedPassword,
           role: 'owner',
         })
- 
+
         await UsersTableTestHelper.addUser({
           id: ownerB,
           name: 'Owner B',
@@ -540,7 +540,7 @@ Edge Case
 
 
         // rooms ownerA
-        await RoomsTableTestHelper.addRoom({ 
+        await RoomsTableTestHelper.addRoom({
           owner_id: ownerA,
           room_number: '01',
           type: '30/60',
@@ -548,7 +548,7 @@ Edge Case
           status: 'available'
         })
 
-        await RoomsTableTestHelper.addRoom({ 
+        await RoomsTableTestHelper.addRoom({
           owner_id: ownerA,
           room_number: '02',
           type: '30/60',
@@ -557,7 +557,7 @@ Edge Case
         })
 
         // rooms ownerB
-        await RoomsTableTestHelper.addRoom({ 
+        await RoomsTableTestHelper.addRoom({
           owner_id: ownerB,
           room_number: '01',
           type: '30/60',
@@ -565,7 +565,7 @@ Edge Case
           status: 'available'
         })
 
-        await RoomsTableTestHelper.addRoom({ 
+        await RoomsTableTestHelper.addRoom({
           owner_id: ownerB,
           room_number: '02',
           type: '30/60',
@@ -573,7 +573,7 @@ Edge Case
           status: 'booked'
         })
 
-        await RoomsTableTestHelper.addRoom({ 
+        await RoomsTableTestHelper.addRoom({
           owner_id: ownerB,
           room_number: '03',
           type: '30/60',
@@ -621,12 +621,12 @@ Edge Case
             expect.objectContaining({ price: 100000 }),
           ])
         )
-        
+
         expect(response.body.meta.pagination.total).toBe(3)
       })
 
       // 8.
-      it('should response 200 and return available rooms filtered by maxPrice', async() => {
+      it('should response 200 and return available rooms filtered by maxPrice', async () => {
         const hashedPassword = await bcrypt.hash('Password1!', 10)
 
         const ownerA = randomUUID()
@@ -639,7 +639,7 @@ Edge Case
           password: hashedPassword,
           role: 'owner',
         })
- 
+
         await UsersTableTestHelper.addUser({
           id: ownerB,
           name: 'Owner B',
@@ -650,7 +650,7 @@ Edge Case
 
 
         // rooms ownerA
-        await RoomsTableTestHelper.addRoom({ 
+        await RoomsTableTestHelper.addRoom({
           owner_id: ownerA,
           room_number: '01',
           type: '30/60',
@@ -658,7 +658,7 @@ Edge Case
           status: 'available'
         })
 
-        await RoomsTableTestHelper.addRoom({ 
+        await RoomsTableTestHelper.addRoom({
           owner_id: ownerA,
           room_number: '02',
           type: '30/60',
@@ -667,7 +667,7 @@ Edge Case
         })
 
         // rooms ownerB
-        await RoomsTableTestHelper.addRoom({ 
+        await RoomsTableTestHelper.addRoom({
           owner_id: ownerB,
           room_number: '01',
           type: '30/60',
@@ -675,7 +675,7 @@ Edge Case
           status: 'available'
         })
 
-        await RoomsTableTestHelper.addRoom({ 
+        await RoomsTableTestHelper.addRoom({
           owner_id: ownerB,
           room_number: '02',
           type: '30/60',
@@ -683,7 +683,7 @@ Edge Case
           status: 'booked'
         })
 
-        await RoomsTableTestHelper.addRoom({ 
+        await RoomsTableTestHelper.addRoom({
           owner_id: ownerB,
           room_number: '03',
           type: '30/60',
@@ -731,12 +731,12 @@ Edge Case
             expect.objectContaining({ price: 800000 }),
           ])
         )
-        
+
         expect(response.body.meta.pagination.total).toBe(3)
       })
 
       // 9.
-      it('should response 200 and return available rooms filtered by minPrice and maxPrice', async() => {
+      it('should response 200 and return available rooms filtered by minPrice and maxPrice', async () => {
         const hashedPassword = await bcrypt.hash('Password1!', 10)
 
         const ownerA = randomUUID()
@@ -749,7 +749,7 @@ Edge Case
           password: hashedPassword,
           role: 'owner',
         })
- 
+
         await UsersTableTestHelper.addUser({
           id: ownerB,
           name: 'Owner B',
@@ -760,7 +760,7 @@ Edge Case
 
 
         // rooms ownerA
-        await RoomsTableTestHelper.addRoom({ 
+        await RoomsTableTestHelper.addRoom({
           owner_id: ownerA,
           room_number: '01',
           type: '30/60',
@@ -768,7 +768,7 @@ Edge Case
           status: 'available'
         })
 
-        await RoomsTableTestHelper.addRoom({ 
+        await RoomsTableTestHelper.addRoom({
           owner_id: ownerA,
           room_number: '02',
           type: '30/60',
@@ -776,7 +776,7 @@ Edge Case
           status: 'available'
         })
 
-        await RoomsTableTestHelper.addRoom({ 
+        await RoomsTableTestHelper.addRoom({
           owner_id: ownerA,
           room_number: '03',
           type: '30/60',
@@ -785,7 +785,7 @@ Edge Case
         })
 
         // rooms ownerB
-        await RoomsTableTestHelper.addRoom({ 
+        await RoomsTableTestHelper.addRoom({
           owner_id: ownerB,
           room_number: '01',
           type: '30/60',
@@ -793,7 +793,7 @@ Edge Case
           status: 'available'
         })
 
-        await RoomsTableTestHelper.addRoom({ 
+        await RoomsTableTestHelper.addRoom({
           owner_id: ownerB,
           room_number: '02',
           type: '30/60',
@@ -801,7 +801,7 @@ Edge Case
           status: 'booked'
         })
 
-        await RoomsTableTestHelper.addRoom({ 
+        await RoomsTableTestHelper.addRoom({
           owner_id: ownerB,
           room_number: '03',
           type: '30/60',
@@ -856,14 +856,14 @@ Edge Case
             expect.objectContaining({ price: 800000, status: 'available' }),
           ])
         )
-        
+
         expect(response.body.meta.pagination.total).toBe(3)
       })
     })
 
     describe('pagination', () => {
       // 10.
-      it('should response 200 and return limited number of rooms based on limit', async() => {
+      it('should response 200 and return limited number of rooms based on limit', async () => {
 
         const hashedPassword = await bcrypt.hash('Password1!', 10)
 
@@ -884,7 +884,7 @@ Edge Case
             status: 'available'
           })
         }
- 
+
         // tenant
         const tenantId = randomUUID()
 
@@ -923,7 +923,7 @@ Edge Case
       })
 
       // 11.
-      it('should response 200 and return correct rooms based on page and limit', async() => {
+      it('should response 200 and return correct rooms based on page and limit', async () => {
 
         const hashedPassword = await bcrypt.hash('Password1!', 10)
 
@@ -944,7 +944,7 @@ Edge Case
             status: 'available'
           })
         }
- 
+
         // tenant
         const tenantId = randomUUID()
 
@@ -985,7 +985,7 @@ Edge Case
       })
 
       // 12.
-      it('should response 200 and return correct pagination metadata (page, limit, total, totalPages)', async() => {
+      it('should response 200 and return correct pagination metadata (page, limit, total, totalPages)', async () => {
 
         const hashedPassword = await bcrypt.hash('Password1!', 10)
 
@@ -1006,7 +1006,7 @@ Edge Case
             status: 'available'
           })
         }
- 
+
         // tenant
         const tenantId = randomUUID()
 
@@ -1048,7 +1048,7 @@ Edge Case
     })
 
     // 13.
-    it('should response 200 and return empty data when no rooms found', async() => {
+    it('should response 200 and return empty data when no rooms found', async () => {
       const hashedPassword = await bcrypt.hash('Password1!', 10)
 
       await UsersTableTestHelper.addUser({
@@ -1061,7 +1061,7 @@ Edge Case
       const loginResponse = await request(server)
         .post('/api/authentications')
         .send({ email: 'tenant@mail.com', password: 'Password1!' })
-      
+
       const { accessToken } = loginResponse.body.data
 
       const response = await request(server)
@@ -1074,7 +1074,7 @@ Edge Case
     })
 
     // 14.
-    it('should ignore booked rooms even if they match filters', async() => {
+    it('should ignore booked rooms even if they match filters', async () => {
 
       const hashedPassword = await bcrypt.hash('Password1!', 10)
 
@@ -1101,7 +1101,7 @@ Edge Case
           status: 'booked'
         })
       }
- 
+
       // tenant
       const tenantId = randomUUID()
 
@@ -1146,8 +1146,8 @@ Edge Case
   describe('when GET /api/me/rooms', () => {
     // AUTHENTICATION
     describe('authentication', () => {
-    // 1. should response 401 when no access token provided
-      it('should response 401 when no access token provided', async() => {
+      // 1. should response 401 when no access token provided
+      it('should response 401 when no access token provided', async () => {
 
         const response = await request(server)
           .get('/api/me/rooms')
@@ -1156,21 +1156,21 @@ Edge Case
       })
 
       // 2. should response 401 when access token is invalid
-      it('should response 401 when access token is invalid', async() => {
+      it('should response 401 when access token is invalid', async () => {
         const response = await request(server)
           .get('/api/me/rooms')
           .set('Authorization', 'Bearer invalid_token')
 
-        expect(response.status).toBe(401)        
+        expect(response.status).toBe(401)
       })
     })
 
     // AUTHORIZATION
     describe('authorization', () => {
-    // 3. should response 403 when role is tenant
-    //    - login sebagai tenant
-    //    - assert: 403
-      it('should response 403 when role is tenant', async() => {
+      // 3. should response 403 when role is tenant
+      //    - login sebagai tenant
+      //    - assert: 403
+      it('should response 403 when role is tenant', async () => {
         const hashedPassword = await bcrypt.hash('Password1!', 10)
 
         await UsersTableTestHelper.addUser({
@@ -1184,7 +1184,7 @@ Edge Case
           .post('/api/authentications')
           .send({ email: 'tenant@mail.com', password: 'Password1!' })
 
-        
+
         const { accessToken } = loginResponse.body.data
 
         const response = await request(server)
@@ -1196,11 +1196,11 @@ Edge Case
     })
 
     describe('success response', () => {
-    // 4. should response 200 and return all rooms (available + booked) for owner
-    //    - seed: 2 available + 1 booked milik owner yang login
-    //    - assert: dapat 3 room
-    //    - assert: ada yang status 'booked' (berbeda dengan public endpoint)
-      it('should response 200 and return all rooms (available + booked) for owner', async() => {
+      // 4. should response 200 and return all rooms (available + booked) for owner
+      //    - seed: 2 available + 1 booked milik owner yang login
+      //    - assert: dapat 3 room
+      //    - assert: ada yang status 'booked' (berbeda dengan public endpoint)
+      it('should response 200 and return all rooms (available + booked) for owner', async () => {
         const ownerId = randomUUID()
         const hashedPassword = await bcrypt.hash('Password1!', 10)
 
@@ -1213,7 +1213,7 @@ Edge Case
         })
 
 
-        await RoomsTableTestHelper.addRoom({ 
+        await RoomsTableTestHelper.addRoom({
           owner_id: ownerId,
           room_number: '01',
           type: '30/60',
@@ -1221,7 +1221,7 @@ Edge Case
           status: 'available'
         })
 
-        await RoomsTableTestHelper.addRoom({ 
+        await RoomsTableTestHelper.addRoom({
           owner_id: ownerId,
           room_number: '02',
           type: '30/60',
@@ -1229,7 +1229,7 @@ Edge Case
           status: 'booked'
         })
 
-        await RoomsTableTestHelper.addRoom({ 
+        await RoomsTableTestHelper.addRoom({
           owner_id: ownerId,
           room_number: '03',
           type: '30/60',
@@ -1241,7 +1241,7 @@ Edge Case
           .post('/api/authentications')
           .send({ email: 'owner@mail.com', password: 'Password1!' })
 
-        
+
         const { accessToken } = loginResponse.body.data
 
         const response = await request(server)
@@ -1254,7 +1254,7 @@ Edge Case
         expect(response.body.meta.pagination.page).toBe(1)
         expect(response.body.meta.pagination.limit).toBe(10)
         expect(response.body.meta.pagination.total).toBe(3)
-        expect(response.body.meta.pagination.totalPages).toBe(1)        
+        expect(response.body.meta.pagination.totalPages).toBe(1)
       })
 
       // 5. should response 200 and return only own rooms, not other owner's rooms
@@ -1262,13 +1262,13 @@ Edge Case
       //    - login sebagai owner_A
       //    - assert: hanya dapat 2 room milik owner_A
       //    - poin: ownerId dari JWT, bukan query
-      it('should response 200 and return only own rooms', async() => {
+      it('should response 200 and return only own rooms', async () => {
         const owner_A = randomUUID()
 
-        await UsersTableTestHelper.addUser({ id: owner_A, role: 'owner'})
+        await UsersTableTestHelper.addUser({ id: owner_A, role: 'owner' })
 
         // room's owner_A
-        await RoomsTableTestHelper.addRoom({ 
+        await RoomsTableTestHelper.addRoom({
           owner_id: owner_A,
           room_number: '01',
           type: '30/60',
@@ -1276,7 +1276,7 @@ Edge Case
           status: 'available'
         })
 
-        await RoomsTableTestHelper.addRoom({ 
+        await RoomsTableTestHelper.addRoom({
           owner_id: owner_A,
           room_number: '02',
           type: '30/60',
@@ -1298,7 +1298,7 @@ Edge Case
 
 
         // room's owner_B
-        await RoomsTableTestHelper.addRoom({ 
+        await RoomsTableTestHelper.addRoom({
           owner_id: owner_B,
           room_number: '01',
           type: '30/60',
@@ -1306,7 +1306,7 @@ Edge Case
           status: 'booked'
         })
 
-        await RoomsTableTestHelper.addRoom({ 
+        await RoomsTableTestHelper.addRoom({
           owner_id: owner_B,
           room_number: '02',
           type: '30/60',
@@ -1318,7 +1318,7 @@ Edge Case
           .post('/api/authentications')
           .send({ email: 'ownerB@mail.com', password: 'Password1!' })
 
-        
+
         const { accessToken } = loginResponse.body.data
 
         const response = await request(server)
@@ -1335,7 +1335,7 @@ Edge Case
         expect(response.body.meta.pagination.page).toBe(1)
         expect(response.body.meta.pagination.limit).toBe(10)
         expect(response.body.meta.pagination.total).toBe(2)
-        expect(response.body.meta.pagination.totalPages).toBe(1)        
+        expect(response.body.meta.pagination.totalPages).toBe(1)
       })
     })
 
@@ -1404,7 +1404,7 @@ Edge Case
       //    - query: ?status=available
       //    - assert: data.length === 2, semua status 'available'
 
-      it('should return only available rooms when filter status is available', async() => {
+      it('should return only available rooms when filter status is available', async () => {
         const response = await request(server)
           .get('/api/me/rooms?status=available')
           .set('Authorization', `Bearer ${accessToken}`)
@@ -1419,13 +1419,13 @@ Edge Case
         expect(response.body.meta.pagination.page).toBe(1)
         expect(response.body.meta.pagination.limit).toBe(10)
         expect(response.body.meta.pagination.total).toBe(2)
-        expect(response.body.meta.pagination.totalPages).toBe(1)       
+        expect(response.body.meta.pagination.totalPages).toBe(1)
       })
 
       // 7. should return only booked rooms when filter status=booked
       //    - query: ?status=booked
       //    - assert: data.length === 2, semua status 'booked'
-      it('should return only booked rooms when filter status is booked', async() => {
+      it('should return only booked rooms when filter status is booked', async () => {
         const response = await request(server)
           .get('/api/me/rooms?status=booked')
           .set('Authorization', `Bearer ${accessToken}`)
@@ -1440,14 +1440,14 @@ Edge Case
         expect(response.body.meta.pagination.page).toBe(1)
         expect(response.body.meta.pagination.limit).toBe(10)
         expect(response.body.meta.pagination.total).toBe(2)
-        expect(response.body.meta.pagination.totalPages).toBe(1)       
+        expect(response.body.meta.pagination.totalPages).toBe(1)
       })
 
       // 8. should return rooms filtered by minPrice
       //    - query: ?minPrice=400000
       //    - assert: data.length === 2 (500k available + 400k booked)
       //    - assert: semua price >= 400000
-      it('should return rooms filtered by minPrice', async() => {
+      it('should return rooms filtered by minPrice', async () => {
         const response = await request(server)
           .get('/api/me/rooms?minPrice=400000')
           .set('Authorization', `Bearer ${accessToken}`)
@@ -1472,18 +1472,18 @@ Edge Case
             expect.objectContaining({ status: 'available', price: 200000 }),
           ])
         )
-        
+
         expect(response.body.meta.pagination.page).toBe(1)
         expect(response.body.meta.pagination.limit).toBe(10)
         expect(response.body.meta.pagination.total).toBe(2)
-        expect(response.body.meta.pagination.totalPages).toBe(1)       
+        expect(response.body.meta.pagination.totalPages).toBe(1)
       })
 
       // 9. should return rooms filtered by maxPrice
       //    - query: ?maxPrice=300000
       //    - assert: data.length === 2 (200k available + 300k booked)
       //    - assert: semua price <= 300000
-      it('should return rooms filtered by maxPrice', async() => {
+      it('should return rooms filtered by maxPrice', async () => {
         const response = await request(server)
           .get('/api/me/rooms?maxPrice=300000')
           .set('Authorization', `Bearer ${accessToken}`)
@@ -1508,11 +1508,11 @@ Edge Case
             expect.objectContaining({ status: 'booked', price: 400000 }),
           ])
         )
-        
+
         expect(response.body.meta.pagination.page).toBe(1)
         expect(response.body.meta.pagination.limit).toBe(10)
         expect(response.body.meta.pagination.total).toBe(2)
-        expect(response.body.meta.pagination.totalPages).toBe(1)       
+        expect(response.body.meta.pagination.totalPages).toBe(1)
       })
 
       // 10. should return rooms filtered by minPrice and maxPrice
@@ -1520,7 +1520,7 @@ Edge Case
       //     - assert: data.length === 2 (300k booked + 400k booked)
       //     - assert: semua price dalam rentang
 
-      it('should return rooms filtered by minPrice and maxPrice', async() => {
+      it('should return rooms filtered by minPrice and maxPrice', async () => {
         const response = await request(server)
           .get('/api/me/rooms?minPrice=300000&maxPrice=450000')
           .set('Authorization', `Bearer ${accessToken}`)
@@ -1546,11 +1546,11 @@ Edge Case
             expect.objectContaining({ status: 'available', price: 200000 }),
           ])
         )
-        
+
         expect(response.body.meta.pagination.page).toBe(1)
         expect(response.body.meta.pagination.limit).toBe(10)
         expect(response.body.meta.pagination.total).toBe(2)
-        expect(response.body.meta.pagination.totalPages).toBe(1)       
+        expect(response.body.meta.pagination.totalPages).toBe(1)
       })
 
       // 11. should not be able to filter by other owner's rooms via ownerId query
@@ -1582,7 +1582,7 @@ Edge Case
         expect(response.body.data).toHaveLength(4)
 
         response.body.data.forEach((room) => {
-          expect(room.owner_id).toBe(ownerId) 
+          expect(room.owner_id).toBe(ownerId)
           expect(room.owner_id).not.toBe(owner_B)
         })
 
@@ -1704,24 +1704,24 @@ Edge Case
 
   describe('when GET /api/rooms/:id', () => {
     describe('authentication', () => {
-      it('should response 401 when no access token provided', async() => {
+      it('should response 401 when no access token provided', async () => {
         const response = await request(server)
           .get('/api/rooms/1')
 
         expect(response.status).toBe(401)
       })
 
-      it('should response 401 when access token is invalid', async() => {
+      it('should response 401 when access token is invalid', async () => {
         const response = await request(server)
           .get('/api/rooms/1')
           .set('Authorization', 'Bearer invalid_token')
 
-        expect(response.status).toBe(401)  
+        expect(response.status).toBe(401)
       })
     })
 
     describe('success response', () => {
-      it('should response 200 and return room detail when room exists', async() => {
+      it('should response 200 and return room detail when room exists', async () => {
         const hashedPassword = await bcrypt.hash('Password1!', 10)
 
         const ownerId = randomUUID()
@@ -1734,10 +1734,10 @@ Edge Case
           password: hashedPassword,
           role: 'owner',
         })
- 
+
         // rooms 
         await RoomsTableTestHelper.addRoom({
-          id: roomId, 
+          id: roomId,
           owner_id: ownerId,
           room_number: '01',
           type: '30/60',
@@ -1765,7 +1765,7 @@ Edge Case
     })
 
     describe('failed response', () => {
-      it('should response 404 when room id does not exist', async() => {
+      it('should response 404 when room id does not exist', async () => {
         const hashedPassword = await bcrypt.hash('Password1!', 10)
 
         const ownerId = randomUUID()
@@ -1791,6 +1791,193 @@ Edge Case
 
         expect(response.status).toBe(404)
       })
+    })
+  })
+
+  /*
+  1. Authentication: 401 no token, 401 invalid token
+
+  2. Authorization: 403 kalau role tenant, 403 kalau bukan owner room tersebut
+
+  3. Validation: 400 kalau body kosong, 400 kalau tipe data salah
+
+  4. Not Found: 404 kalau room tidak ada
+
+  5. Success: 200 dan data terupdate
+  */
+  describe('when PUT /api/rooms/:id', () => {
+
+    let accessToken
+    let ownerId
+    let roomId
+
+    beforeEach(async () => {
+      ownerId = randomUUID()
+      roomId = randomUUID()
+      const hashedPassword = await bcrypt.hash('Password1!', 10)
+
+      await UsersTableTestHelper.addUser({
+        id: ownerId,
+        name: 'Owner Name',
+        email: 'owner@mail.com',
+        password: hashedPassword,
+        role: 'owner',
+      })
+
+      await RoomsTableTestHelper.addRoom({
+        id: roomId,
+        owner_id: ownerId,
+        room_number: '01',
+        type: '36/60',
+        price: 250000,
+        status: 'available',
+        facilities: ['bed', 'bathroom'],
+      })
+
+      const loginResponse = await request(server)
+        .post('/api/authentications')
+        .send({ email: 'owner@mail.com', password: 'Password1!' })
+
+      accessToken = loginResponse.body.data.accessToken
+    })
+
+    it('should response 401 when access token is invalid', async () => {
+      const response = await request(server)
+        .put(`/api/rooms/${roomId}`)
+        .set('Authorization', 'Bearer invalid_token')  // token invalid
+        .send({ room_number: '02' })
+
+      expect(response.status).toBe(401)
+    })
+
+    it('should response 403 when role is tenant', async () => {
+      const hashedPassword = await bcrypt.hash('Password1!', 10)
+
+      await UsersTableTestHelper.addUser({
+        name: 'Tenant Name',
+        email: 'tenant@mail.com',
+        password: hashedPassword,
+        role: 'tenant',
+      })
+
+      const loginResponse = await request(server)
+        .post('/api/authentications')
+        .send({ email: 'tenant@mail.com', password: 'Password1!' })
+
+      const tenantAccessToken = loginResponse.body.data.accessToken
+
+      const response = await request(server)
+        .put(`/api/rooms/${roomId}`)
+        .set('Authorization', `Bearer ${tenantAccessToken}`)
+        .send({ room_number: '02' })
+
+      expect(response.status).toBe(403)
+    })
+
+    it('should response 403 when owner tries to update another owner room', async () => {
+      const hashedPassword = await bcrypt.hash('Password1!', 10)
+      const otherOwnerId = randomUUID()
+
+      await UsersTableTestHelper.addUser({
+        id: otherOwnerId,
+        name: 'Other Owner',
+        email: 'otherowner@mail.com',
+        password: hashedPassword,
+        role: 'owner',
+      })
+
+      const loginResponse = await request(server)
+        .post('/api/authentications')
+        .send({ email: 'otherowner@mail.com', password: 'Password1!' })
+
+      const otherOwnerAccessToken = loginResponse.body.data.accessToken
+
+      const response = await request(server)
+        .put(`/api/rooms/${roomId}`)  // room milik ownerId dari owner asli di beforeEach
+        .set('Authorization', `Bearer ${otherOwnerAccessToken}`)
+        .send({ room_number: '02' })
+
+      expect(response.status).toBe(403)
+    })
+
+    it('should response 400 when payload is empty', async () => {
+      const response = await request(server)
+        .put(`/api/rooms/${roomId}`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({})
+
+      expect(response.status).toBe(400)
+      expect(response.body.message).toBe('tidak dapat mengupdate kamar karena tidak ada properti yang dikirim')
+    })
+
+    it('should response 400 when data type payload is wrong', async () => {
+      const response = await request(server)
+        .put(`/api/rooms/${roomId}`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({ room_number: 2 })
+
+      expect(response.status).toBe(400)
+      expect(response.body.message).toBe('tidak dapat mengupdate kamar karena tipe data tidak sesuai')
+    })
+
+    it('should response 400 when status payload is wrong', async () => {
+      const response = await request(server)
+        .put(`/api/rooms/${roomId}`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({ status: 'ready' })
+
+      expect(response.status).toBe(400)
+      expect(response.body.message).toBe('tidak dapat mengupdate kamar karena status tidak valid')
+    })
+
+    it('should response 400 when room_number is too long', async () => {
+      const response = await request(server)
+        .put(`/api/rooms/${roomId}`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({ room_number: '2'.repeat(11) })
+
+      expect(response.status).toBe(400)
+      expect(response.body.message).toBe('tidak dapat mengupdate kamar karena nomor kamar terlalu panjang')
+    })
+
+    it('should response 400 when type room is too long', async () => {
+      const response = await request(server)
+        .put(`/api/rooms/${roomId}`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({ type: '3'.repeat(51) })
+
+      expect(response.status).toBe(400)
+      expect(response.body.message).toBe('tidak dapat mengupdate kamar karena type terlalu panjang')
+    })
+
+    it('should response 404 when no room', async () => {
+      const fakeRoomId = randomUUID()
+
+      const response = await request(server)
+        .put(`/api/rooms/${fakeRoomId}`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({ room_number: '02' })
+
+      expect(response.status).toBe(404)
+    })
+
+    it('should response 200 when success update payload', async () => {
+      const response = await request(server)
+        .put(`/api/rooms/${roomId}`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({
+          room_number: '02',
+          type: '36/72',
+          price: 500000,
+          facilities: ['shower', 'couch'],
+        })
+
+      expect(response.status).toBe(200)
+      expect(response.body.status).toBe('success')
+      expect(response.body.data.room_number).toBe('02')
+      expect(response.body.data.type).toBe('36/72')
+      expect(response.body.data.price).toBe(500000)
+      expect(response.body.data.facilities).toEqual(['shower', 'couch'])
     })
   })
 })

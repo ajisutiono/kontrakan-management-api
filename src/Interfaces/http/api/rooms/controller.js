@@ -64,6 +64,35 @@ class RoomsController {
     })
 
   })
+
+  updateRoomById = asyncHandler(async (req, res) => {
+    const { id: roomId } = req.params
+    const { room_number, type, price, facilities, status } = req.body
+
+    const payload = {
+      room_number,
+      type,
+      price: price !== undefined ? Number(price) : undefined,
+      facilities,
+      status
+    }
+
+
+    const updateRoomUseCase = this._container.resolve('updateRoomUseCase')
+
+    const result = await updateRoomUseCase.execute({
+      roomId,
+      ownerId: req.user.id,
+      role: req.user.role, 
+      payload,
+    })
+
+
+    res.status(200).json({
+      status: 'success',
+      data: result
+    })
+  })
 }
 
 export default RoomsController

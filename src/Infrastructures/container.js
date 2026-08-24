@@ -25,6 +25,7 @@ import AddRoomUseCase from '../Applications/use_case/AddRoomUseCase.js'
 import GetRoomsUseCase from '../Applications/use_case/GetRoomsUseCase.js'
 import GetMyRoomsUseCase from '../Applications/use_case/GetMyRoomsUseCase.js'
 import GetRoomUseCase from '../Applications/use_case/GetRoomUseCase.js'
+import UpdateRoomUseCase from '../Applications/use_case/UpdateRoomUseCase.js'
 
 const container = createContainer()
 
@@ -55,6 +56,7 @@ container.register({
   getRoomsUseCase: asClass(GetRoomsUseCase).singleton(), // get rooms 
   getMyRoomUseCase: asClass(GetMyRoomsUseCase).singleton(),
   getRoomUseCase: asClass(GetRoomUseCase).singleton(), // get room by id
+  updateRoomUseCase: asClass(UpdateRoomUseCase).singleton(), // update room by id
 })
 
 export default container

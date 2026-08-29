@@ -15,6 +15,10 @@ class RoomRepository {
   async updateRoomById(roomId, updateRoom) {
     throw new Error('ROOM_REPOSITORY.METHOD_NOT_IMPLEMENTED')
   }
+
+  async deleteRoomById(roomId) {
+    throw new Error('ROOM_REPOSITORY.METHOD_NOT_IMPLEMENTED')
+  }
 }
 
 export default RoomRepository

@@ -43,7 +43,7 @@ src/
 
 - [x] Authentication — Register, Login, Refresh Token, Logout
 - [x] Room management — add room, listing with filter & pagination
-- [x] Owner dashboard — manage own rooms
+- [ ] Owner dashboard — manage own rooms
 - [ ] Tenant management
 - [ ] Payment management
 
@@ -77,8 +77,8 @@ POST /api/users
 Content-Type: application/json
 
 {
-  "name": "User Name",
-  "email": "user@mail.com",
+  "name": "Aji Sutiono",
+  "email": "aji@mail.com",
   "password": "Password1!",
   "role": "owner"
 }
@@ -88,8 +88,8 @@ Content-Type: application/json
   "status": "success",
   "data": {
     "id": "uuid",
-    "name": "User Name",
-    "email": "user@mail.com",
+    "name": "Aji Sutiono",
+    "email": "aji@mail.com",
     "role": "owner"
   }
 }
@@ -196,5 +196,6 @@ ACCESS_TOKEN_AGE=900
 
 This project is actively being developed. Features currently in progress:
 
+- `GET /api/me/rooms` — owner dashboard (view and manage own rooms)
 - Tenant management
 - Payment management

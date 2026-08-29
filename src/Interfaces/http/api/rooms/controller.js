@@ -83,7 +83,7 @@ class RoomsController {
     const result = await updateRoomUseCase.execute({
       roomId,
       ownerId: req.user.id,
-      role: req.user.role, 
+      role: req.user.role,
       payload,
     })
 
@@ -91,6 +91,22 @@ class RoomsController {
     res.status(200).json({
       status: 'success',
       data: result
+    })
+  })
+
+  deleteRoomById = asyncHandler(async (req, res) => {
+    const { id: roomId } = req.params
+
+    const deleteRoomUseCase = this._container.resolve('deleteRoomUseCase')
+
+    await deleteRoomUseCase.execute({
+      roomId,
+      ownerId: req.user.id,
+      role: req.user.role,
+    })
+
+    res.status(200).json({
+      status: 'success',
     })
   })
 }

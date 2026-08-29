@@ -163,6 +163,15 @@ class RoomRepositoryPostgres extends RoomRepository {
       facilities: row.facilities ?? null,
     }
   }
+
+  async deleteRoomById(roomId) {
+    const query = {
+      text: 'DELETE FROM rooms WHERE id = $1',
+      values: [roomId],
+    }
+
+    await this._pool.query(query)
+  }
 }
 
 export default RoomRepositoryPostgres

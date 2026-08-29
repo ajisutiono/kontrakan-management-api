@@ -519,4 +519,21 @@ describe('RoomRepositoryPostgres', () => {
     })
 
   })
+
+  describe('deleteRoomById', () => {
+    it('should delete room correctly', async () => {
+      const ownerId = randomUUID()
+      const roomId = randomUUID()
+
+      await UsersTableTestHelper.addUser({ id: ownerId, role: 'owner' })
+      await RoomsTableTestHelper.addRoom({ id: roomId, owner_id: ownerId })
+
+      const repository = new RoomRepositoryPostgres({ pool })
+
+      await repository.deleteRoomById(roomId)
+
+      const deletedRoom = await RoomsTableTestHelper.findRoomById(roomId)
+      expect(deletedRoom).toBeUndefined()
+    })
+  })
 })

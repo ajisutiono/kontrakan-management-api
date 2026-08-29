@@ -9,6 +9,7 @@ const createRoomRouter = (controller, container) => {
   router.get('/', authMiddleware(container), controller.getRooms)
   router.get('/:id', authMiddleware(container), controller.getRoomById)
   router.put('/:id', authMiddleware(container), controller.updateRoomById)
+  router.delete('/:id', authMiddleware(container), controller.deleteRoomById)
 
   return router
 }

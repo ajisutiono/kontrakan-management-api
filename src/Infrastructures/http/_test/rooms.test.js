@@ -1980,4 +1980,123 @@ Edge Case
       expect(response.body.data.facilities).toEqual(['shower', 'couch'])
     })
   })
+
+  describe('when DELETE /api/rooms/:id', () => {
+    let accessToken
+    let ownerId
+    let roomId
+
+    beforeEach(async () => {
+      ownerId = randomUUID()
+      roomId = randomUUID()
+      const hashedPassword = await bcrypt.hash('Password1!', 10)
+
+      await UsersTableTestHelper.addUser({
+        id: ownerId,
+        name: 'Owner Name',
+        email: 'owner@mail.com',
+        password: hashedPassword,
+        role: 'owner',
+      })
+
+      await RoomsTableTestHelper.addRoom({
+        id: roomId,
+        owner_id: ownerId,
+        room_number: '01',
+        type: '36/60',
+        price: 250000,
+        status: 'available',
+      })
+
+      const loginResponse = await request(server)
+        .post('/api/authentications')
+        .send({ email: 'owner@mail.com', password: 'Password1!' })
+
+      accessToken = loginResponse.body.data.accessToken
+    })
+
+    it('should response 401 when no access token provided', async () => {
+      const response = await request(server)
+        .delete(`/api/rooms/${roomId}`)
+
+      expect(response.status).toBe(401)
+    })
+
+    it('should response 401 when access token is invalid', async () => {
+      const response = await request(server)
+        .delete(`/api/rooms/${roomId}`)
+        .set('Authorization', 'Bearer invalid_token')
+
+      expect(response.status).toBe(401)
+    })
+
+    it('should response 403 when role is tenant', async () => {
+      const hashedPassword = await bcrypt.hash('Password1!', 10)
+
+      await UsersTableTestHelper.addUser({
+        name: 'Tenant Name',
+        email: 'tenant@mail.com',
+        password: hashedPassword,
+        role: 'tenant',
+      })
+
+      const loginResponse = await request(server)
+        .post('/api/authentications')
+        .send({ email: 'tenant@mail.com', password: 'Password1!' })
+
+      const tenantAccessToken = loginResponse.body.data.accessToken
+
+      const response = await request(server)
+        .delete(`/api/rooms/${roomId}`)
+        .set('Authorization', `Bearer ${tenantAccessToken}`)
+
+      expect(response.status).toBe(403)
+    })
+
+    it('should response 403 when owner tries to delete another owner room', async () => {
+      const hashedPassword = await bcrypt.hash('Password1!', 10)
+
+      await UsersTableTestHelper.addUser({
+        name: 'Other Owner',
+        email: 'otherowner@mail.com',
+        password: hashedPassword,
+        role: 'owner',
+      })
+
+      const loginResponse = await request(server)
+        .post('/api/authentications')
+        .send({ email: 'otherowner@mail.com', password: 'Password1!' })
+
+      const otherOwnerAccessToken = loginResponse.body.data.accessToken
+
+      const response = await request(server)
+        .delete(`/api/rooms/${roomId}`)
+        .set('Authorization', `Bearer ${otherOwnerAccessToken}`)
+
+      expect(response.status).toBe(403)
+    })
+
+    it('should response 404 when room not found', async () => {
+      const fakeRoomId = randomUUID()
+
+      const response = await request(server)
+        .delete(`/api/rooms/${fakeRoomId}`)
+        .set('Authorization', `Bearer ${accessToken}`)
+
+      expect(response.status).toBe(404)
+    })
+
+    it('should response 200 and delete room successfully', async () => {
+      const response = await request(server)
+        .delete(`/api/rooms/${roomId}`)
+        .set('Authorization', `Bearer ${accessToken}`)
+
+      expect(response.status).toBe(200)
+      expect(response.body.status).toBe('success')
+
+      // verifikasi room benar-benar terhapus dari DB
+      const deletedRoom = await RoomsTableTestHelper.findRoomById(roomId)
+      expect(deletedRoom).toBeUndefined()
+    })
+  })
 })

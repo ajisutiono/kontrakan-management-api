@@ -1,10 +1,8 @@
 import { describe, expect, it, vi } from 'vitest'
 
-import RegisterBooking from '../../../Domains/bookings/entities/RegisterBooking'
 import RoomRepository from '../../../Domains/rooms/RoomRepository'
 import BookingRepository from '../../../Domains/bookings/BookingRepository'
 import AddBookingUseCase from '../AddBookingUseCase'
-import AuthorizationError from '../../../Commons/exceptions/AuthorizationError'
 import NotFoundError from '../../../Commons/exceptions/NotFoundError'
 
 describe('AddBookingUseCase', () => {

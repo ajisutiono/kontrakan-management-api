@@ -34,6 +34,11 @@ const DomainErrorTranslator = {
     'UPDATE_ROOM.INVALID_STATUS': new InvariantError('tidak dapat mengupdate kamar karena status tidak valid'),
     'UPDATE_ROOM.ROOM_NUMBER_TOO_LONG': new InvariantError('tidak dapat mengupdate kamar karena nomor kamar terlalu panjang'),
     'UPDATE_ROOM.TYPE_TOO_LONG': new InvariantError('tidak dapat mengupdate kamar karena type terlalu panjang'),
+
+    // RegisterBooking errors
+    'REGISTER_BOOKING.NOT_CONTAIN_NEEDED_PROPERTY': new InvariantError('tidak dapat membuat booking karena properti yang dibutuhkan tidak ada'),
+    'REGISTER_BOOKING.NOT_MEET_DATA_TYPE_SPECIFICATION': new InvariantError('tidak dapat membuat booking karena tipe data tidak sesuai'),
+    'REGISTER_BOOKING.INVALID_START_DATE': new InvariantError('tidak dapat membuat booking karena format tanggal tidak valid'),
   },
 
   translate(error) {

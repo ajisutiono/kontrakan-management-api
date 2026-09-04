@@ -10,6 +10,7 @@ import pool from './database/postgres/pool.js'
 import UserRepositoryPostgres from './repository/UserRepositoryPostgres.js'
 import AuthenticationRepositoryPostgres from './repository/AuthenticationRepositoryPostgres.js'
 import RoomRepositoryPostgres from './repository/RoomRepositoryPostgres.js'
+import BookingRepositoryPostgres from './repository/BookingRespositoryPostgres.js'
 
 // security
 import BcryptPasswordHash from './security/BcryptPasswordHash.js'
@@ -27,6 +28,7 @@ import GetMyRoomsUseCase from '../Applications/use_case/GetMyRoomsUseCase.js'
 import GetRoomUseCase from '../Applications/use_case/GetRoomUseCase.js'
 import UpdateRoomUseCase from '../Applications/use_case/UpdateRoomUseCase.js'
 import DeleteRoomUseCase from '../Applications/use_case/DeleteRoomUseCase.js'
+import AddBookingUseCase from '../Applications/use_case/AddBookingUseCase.js'
 
 const container = createContainer()
 
@@ -42,6 +44,7 @@ container.register({
   userRepository: asClass(UserRepositoryPostgres).singleton(),
   authenticationRepository: asClass(AuthenticationRepositoryPostgres).singleton(),
   roomRepository: asClass(RoomRepositoryPostgres).singleton(),
+  bookingRepository: asClass(BookingRepositoryPostgres).singleton(),
 
   // Security
   passwordHash: asClass(BcryptPasswordHash).singleton(),
@@ -59,6 +62,7 @@ container.register({
   getRoomUseCase: asClass(GetRoomUseCase).singleton(), // get room by id
   updateRoomUseCase: asClass(UpdateRoomUseCase).singleton(), // update room by id
   deleteRoomUseCase: asClass(DeleteRoomUseCase).singleton(), 
+  addBookingUseCase: asClass(AddBookingUseCase).singleton(),
 })
 
 export default container

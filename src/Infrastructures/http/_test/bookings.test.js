@@ -220,4 +220,234 @@ describe('Bookings API', () => {
       })
     })
   })
+
+  describe('when GET /api/me/bookings', () => {
+    /*
+    Data seed (dibuat ulang sebelum setiap test):
+
+    owner A: room A1 ('01'), room A2 ('02')
+    owner B: room B1 ('01')
+
+    tenant 1: booking di A1 (active), booking di B1 (cancelled)
+    tenant 2: booking di A2 (active), booking di A1 (cancelled)
+
+    Hasil yang diharapkan:
+    - tenant 1 -> 2 booking,  tenant 2 -> 2 booking
+    - owner A  -> 3 booking,  owner B  -> 1 booking
+    */
+    let ownerAId
+    let ownerBId
+    let tenant1Id
+    let tenant2Id
+    let roomA1Id
+    let roomA2Id
+    let roomB1Id
+
+    const login = async (email) => {
+      const response = await request(server)
+        .post('/api/authentications')
+        .send({ email, password: 'Password1!' })
+
+      return response.body.data.accessToken
+    }
+
+    beforeEach(async () => {
+      const hashedPassword = await bcrypt.hash('Password1!', 10)
+
+      ownerAId = randomUUID()
+      ownerBId = randomUUID()
+      tenant1Id = randomUUID()
+      tenant2Id = randomUUID()
+      roomA1Id = randomUUID()
+      roomA2Id = randomUUID()
+      roomB1Id = randomUUID()
+
+      await UsersTableTestHelper.addUser({ id: ownerAId, name: 'Owner A', email: 'ownera@mail.com', password: hashedPassword, role: 'owner' })
+      await UsersTableTestHelper.addUser({ id: ownerBId, name: 'Owner B', email: 'ownerb@mail.com', password: hashedPassword, role: 'owner' })
+      await UsersTableTestHelper.addUser({ id: tenant1Id, name: 'Tenant One', email: 'tenant1@mail.com', password: hashedPassword, role: 'tenant' })
+      await UsersTableTestHelper.addUser({ id: tenant2Id, name: 'Tenant Two', email: 'tenant2@mail.com', password: hashedPassword, role: 'tenant' })
+
+      await RoomsTableTestHelper.addRoom({ id: roomA1Id, owner_id: ownerAId, room_number: '01', price: 250000 })
+      await RoomsTableTestHelper.addRoom({ id: roomA2Id, owner_id: ownerAId, room_number: '02', price: 300000 })
+      await RoomsTableTestHelper.addRoom({ id: roomB1Id, owner_id: ownerBId, room_number: '01', price: 400000 })
+
+      await BookingsTableTestHelper.addBooking({ room_id: roomA1Id, tenant_id: tenant1Id, start_date: '2026-10-01', status: 'active' })
+      await BookingsTableTestHelper.addBooking({ room_id: roomB1Id, tenant_id: tenant1Id, start_date: '2026-10-02', status: 'cancelled' })
+      await BookingsTableTestHelper.addBooking({ room_id: roomA2Id, tenant_id: tenant2Id, start_date: '2026-10-03', status: 'active' })
+      await BookingsTableTestHelper.addBooking({ room_id: roomA1Id, tenant_id: tenant2Id, start_date: '2026-10-04', status: 'cancelled' })
+    })
+
+    // AUTHENTICATION
+    describe('authentication', () => {
+      it('should response 401 when no access token provided', async () => {
+        const response = await request(server)
+          .get('/api/me/bookings')
+
+        expect(response.status).toBe(401)
+      })
+
+      it('should response 401 when access token is invalid', async () => {
+        const response = await request(server)
+          .get('/api/me/bookings')
+          .set('Authorization', 'Bearer invalid_token')
+
+        expect(response.status).toBe(401)
+      })
+    })
+
+    // SUCCESS RESPONSE
+    describe('success response', () => {
+      it('should response 200 and return only own bookings for tenant', async () => {
+        const accessToken = await login('tenant1@mail.com')
+
+        const response = await request(server)
+          .get('/api/me/bookings')
+          .set('Authorization', `Bearer ${accessToken}`)
+
+        expect(response.status).toBe(200)
+        expect(response.body.status).toBe('success')
+        expect(response.body.data).toHaveLength(2)
+
+        response.body.data.forEach((booking) => {
+          expect(booking.tenant_id).toBe(tenant1Id)
+        })
+
+        expect(response.body.meta.pagination.total).toBe(2)
+      })
+
+      it('should response 200 and return only bookings in own rooms for owner', async () => {
+        const accessToken = await login('ownera@mail.com')
+
+        const response = await request(server)
+          .get('/api/me/bookings')
+          .set('Authorization', `Bearer ${accessToken}`)
+
+        expect(response.status).toBe(200)
+        expect(response.body.data).toHaveLength(3)
+
+        response.body.data.forEach((booking) => {
+          expect([roomA1Id, roomA2Id]).toContain(booking.room_id)
+        })
+
+        expect(response.body.meta.pagination.total).toBe(3)
+      })
+
+      it('should not return bookings from rooms owned by another owner', async () => {
+        const accessToken = await login('ownerb@mail.com')
+
+        const response = await request(server)
+          .get('/api/me/bookings')
+          .set('Authorization', `Bearer ${accessToken}`)
+
+        expect(response.status).toBe(200)
+        expect(response.body.data).toHaveLength(1)
+        expect(response.body.data[0].room_id).toBe(roomB1Id)
+      })
+
+      it('should response 200 and return empty data when user has no bookings', async () => {
+        const hashedPassword = await bcrypt.hash('Password1!', 10)
+
+        await UsersTableTestHelper.addUser({
+          id: randomUUID(),
+          name: 'Tenant Three',
+          email: 'tenant3@mail.com',
+          password: hashedPassword,
+          role: 'tenant',
+        })
+
+        const accessToken = await login('tenant3@mail.com')
+
+        const response = await request(server)
+          .get('/api/me/bookings')
+          .set('Authorization', `Bearer ${accessToken}`)
+
+        expect(response.status).toBe(200)
+        expect(response.body.data).toEqual([])
+        expect(response.body.meta.pagination.total).toBe(0)
+        expect(response.body.meta.pagination.totalPages).toBe(0)
+      })
+    })
+
+    // FILTERING
+    describe('filtering', () => {
+      it('should return only active bookings when status is active', async () => {
+        const accessToken = await login('tenant1@mail.com')
+
+        const response = await request(server)
+          .get('/api/me/bookings?status=active')
+          .set('Authorization', `Bearer ${accessToken}`)
+
+        expect(response.status).toBe(200)
+        expect(response.body.data).toHaveLength(1)
+        expect(response.body.data[0].status).toBe('active')
+      })
+
+      it('should return only cancelled bookings when status is cancelled', async () => {
+        const accessToken = await login('tenant1@mail.com')
+
+        const response = await request(server)
+          .get('/api/me/bookings?status=cancelled')
+          .set('Authorization', `Bearer ${accessToken}`)
+
+        expect(response.status).toBe(200)
+        expect(response.body.data).toHaveLength(1)
+        expect(response.body.data[0].status).toBe('cancelled')
+      })
+
+      it('should return only bookings of the given room when roomId is provided', async () => {
+        const accessToken = await login('ownera@mail.com')
+
+        const response = await request(server)
+          .get(`/api/me/bookings?roomId=${roomA1Id}`)
+          .set('Authorization', `Bearer ${accessToken}`)
+
+        // room A1 punya 2 booking: tenant 1 (active) dan tenant 2 (cancelled)
+        expect(response.status).toBe(200)
+        expect(response.body.data).toHaveLength(2)
+        response.body.data.forEach((booking) => {
+          expect(booking.room_id).toBe(roomA1Id)
+        })
+      })
+    })
+
+    // PAGINATION
+    describe('pagination', () => {
+      it('should return limited number of bookings and correct metadata', async () => {
+        const accessToken = await login('ownera@mail.com')
+
+        const response = await request(server)
+          .get('/api/me/bookings?page=1&limit=2')
+          .set('Authorization', `Bearer ${accessToken}`)
+
+        expect(response.status).toBe(200)
+        expect(response.body.data).toHaveLength(2)
+        expect(response.body.meta.pagination).toEqual({
+          page: 1,
+          limit: 2,
+          total: 3,
+          totalPages: 2,
+        })
+      })
+
+      it('should return the remaining bookings on page 2 without overlap', async () => {
+        const accessToken = await login('ownera@mail.com')
+
+        const page1 = await request(server)
+          .get('/api/me/bookings?page=1&limit=2')
+          .set('Authorization', `Bearer ${accessToken}`)
+
+        const page2 = await request(server)
+          .get('/api/me/bookings?page=2&limit=2')
+          .set('Authorization', `Bearer ${accessToken}`)
+
+        expect(page2.status).toBe(200)
+        expect(page2.body.data).toHaveLength(1)
+
+        const page1Ids = page1.body.data.map((booking) => booking.id)
+        page2.body.data.forEach((booking) => {
+          expect(page1Ids).not.toContain(booking.id)
+        })
+      })
+    })
+  })
 })

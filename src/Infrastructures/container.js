@@ -29,6 +29,7 @@ import GetRoomUseCase from '../Applications/use_case/GetRoomUseCase.js'
 import UpdateRoomUseCase from '../Applications/use_case/UpdateRoomUseCase.js'
 import DeleteRoomUseCase from '../Applications/use_case/DeleteRoomUseCase.js'
 import AddBookingUseCase from '../Applications/use_case/AddBookingUseCase.js'
+import GetMyBookingsUseCase from '../Applications/use_case/GetMyBookingsUseCase.js'
 
 const container = createContainer()
 
@@ -61,8 +62,9 @@ container.register({
   getMyRoomUseCase: asClass(GetMyRoomsUseCase).singleton(),
   getRoomUseCase: asClass(GetRoomUseCase).singleton(), // get room by id
   updateRoomUseCase: asClass(UpdateRoomUseCase).singleton(), // update room by id
-  deleteRoomUseCase: asClass(DeleteRoomUseCase).singleton(), 
+  deleteRoomUseCase: asClass(DeleteRoomUseCase).singleton(),
   addBookingUseCase: asClass(AddBookingUseCase).singleton(),
+  getMyBookingsUseCase: asClass(GetMyBookingsUseCase).singleton(),
 })
 
 export default container

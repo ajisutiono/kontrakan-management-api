@@ -5,6 +5,7 @@ import createAuthenticationsApi from './authentications/index.js'
 import createRoomApi from './rooms/index.js'
 import createMyRoomsApi from './me/rooms/index.js'
 import createBookingApi from './bookings/index.js'
+import createMyBookingsApi from './me/bookings/index.js'
 
 const createRouter = (container) => {
   const router = Router()
@@ -14,6 +15,7 @@ const createRouter = (container) => {
   router.use('/rooms', createRoomApi(container))
   router.use('/me/rooms', createMyRoomsApi(container))
   router.use('/bookings', createBookingApi(container))
+  router.use('/me/bookings', createMyBookingsApi(container))
 
   return router
 }

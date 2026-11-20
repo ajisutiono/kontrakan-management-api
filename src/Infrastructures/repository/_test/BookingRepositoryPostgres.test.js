@@ -6,6 +6,7 @@ import BookingsTableTestHelper from '../../../../tests/BookingsTableTestHelper.j
 import RoomsTableTestHelper from '../../../../tests/RoomsTableTestHelper.js'
 import UsersTableTestHelper from '../../../../tests/UsersTableTestHelper.js'
 import BookingRepositoryPostgres from '../BookingRespositoryPostgres.js'
+import InvariantError from '../../../Commons/exceptions/InvariantError.js'
 
 describe('BookingRepositoryPostgres', () => {
   afterEach(async () => {
@@ -19,7 +20,7 @@ describe('BookingRepositoryPostgres', () => {
   })
 
   describe('addBooking function', () => {
-    it('should add booking correctly and return booking data', async () => {
+    it('should add booking correctly and set room status to booked', async () => {
       const roomId = randomUUID()
       const ownerId = randomUUID()
       const tenantId = randomUUID()
@@ -66,9 +67,13 @@ describe('BookingRepositoryPostgres', () => {
 
       const booking = await BookingsTableTestHelper.findBookingById(bookingId)
       expect(booking).toBeDefined()
+
+      // status kamar harus ikut berubah
+      const room = await RoomsTableTestHelper.findRoomById(roomId)
+      expect(room.status).toBe('booked')
     })
 
-    it('should throw error when room_id does not exist', async () => {
+    it('should throw InvariantError when room does not exist', async () => {
       const tenantId = randomUUID()
 
       await UsersTableTestHelper.addUser({
@@ -83,7 +88,71 @@ describe('BookingRepositoryPostgres', () => {
         room_id: randomUUID(),
         tenant_id: tenantId,
         start_date: '2026-09-04',
+      })).rejects.toThrow(InvariantError)
+    })
+
+    it('should throw InvariantError and not create booking when room is already booked', async () => {
+      const roomId = randomUUID()
+      const ownerId = randomUUID()
+      const tenantId = randomUUID()
+
+      await UsersTableTestHelper.addUser({
+        id: ownerId,
+        email: `${ownerId}@test.com`,
+        role: 'owner',
+      })
+
+      await UsersTableTestHelper.addUser({
+        id: tenantId,
+        email: `${tenantId}@test.com`,
+        role: 'tenant',
+      })
+
+      await RoomsTableTestHelper.addRoom({
+        id: roomId,
+        owner_id: ownerId,
+        status: 'booked',
+      })
+
+      const bookingRepositoryPostgres = new BookingRepositoryPostgres({ pool })
+
+      await expect(bookingRepositoryPostgres.addBooking({
+        room_id: roomId,
+        tenant_id: tenantId,
+        start_date: '2026-09-04',
+      })).rejects.toThrow(InvariantError)
+
+      const bookings = await BookingsTableTestHelper.findBookingsByRoomId(roomId)
+      expect(bookings).toHaveLength(0)
+    })
+
+    it('should not change room status when tenant does not exist', async () => {
+      const roomId = randomUUID()
+      const ownerId = randomUUID()
+
+      await UsersTableTestHelper.addUser({
+        id: ownerId,
+        email: `${ownerId}@test.com`,
+        role: 'owner',
+      })
+
+      await RoomsTableTestHelper.addRoom({
+        id: roomId,
+        owner_id: ownerId,
+        status: 'available',
+      })
+
+      const bookingRepositoryPostgres = new BookingRepositoryPostgres({ pool })
+
+      await expect(bookingRepositoryPostgres.addBooking({
+        room_id: roomId,
+        tenant_id: randomUUID(), // tenant tidak ada -> foreign key error
+        start_date: '2026-09-04',
       })).rejects.toThrow()
+
+      // kamar harus tetap available, karena seluruh query dibatalkan
+      const room = await RoomsTableTestHelper.findRoomById(roomId)
+      expect(room.status).toBe('available')
     })
   })
 

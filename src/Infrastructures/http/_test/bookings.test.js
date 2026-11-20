@@ -218,6 +218,19 @@ describe('Bookings API', () => {
         expect(response.body.data).toHaveProperty('start_date', '2026-10-01')
         expect(response.body.data).toHaveProperty('status', 'active')
       })
+
+      it('should set room status to booked after booking is created', async () => {
+        await request(server)
+          .post('/api/bookings')
+          .set('Authorization', `Bearer ${tenantAccessToken}`)
+          .send({
+            room_id: roomId,
+            start_date: '2026-10-01',
+          })
+
+        const room = await RoomsTableTestHelper.findRoomById(roomId)
+        expect(room.status).toBe('booked')
+      })
     })
   })
 

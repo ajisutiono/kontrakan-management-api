@@ -1,5 +1,6 @@
 import { randomUUID } from 'crypto'
 import BookingRepository from '../../Domains/bookings/BookingRepository.js'
+import InvariantError from '../../Commons/exceptions/InvariantError.js'
 
 class BookingRepositoryPostgres extends BookingRepository {
   /* istanbul ignore next */
@@ -14,14 +15,26 @@ class BookingRepositoryPostgres extends BookingRepository {
     const id = this._idGenerator()
 
     const query = {
-      text: `INSERT INTO bookings (id, room_id, tenant_id, start_date) 
-             VALUES ($1, $2, $3, $4) 
+      text: `WITH booked_room AS (
+              UPDATE rooms
+              SET status = 'booked', updated_at = NOW()
+              WHERE id = $2::uuid AND status = 'available'
+              RETURNING id
+            )
+      
+             INSERT INTO bookings (id, room_id, tenant_id, start_date)
+             SELECT $1::uuid, booked_room.id, $3::uuid, $4::date
+             FROM booked_room
              RETURNING id, room_id, tenant_id, start_date, status`,
       values: [id, room_id, tenant_id, start_date],
     }
 
     const result = await this._pool.query(query)
-    const row =  result.rows[0]
+    if (!result.rows[0]) {
+      throw new InvariantError('Ruangan ini tidak tersedia')
+    }
+
+    const row = result.rows[0]
 
     return {
       ...row,

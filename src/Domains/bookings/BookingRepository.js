@@ -7,6 +7,14 @@ class BookingRepository {
   async getBookings({ filters, page, limit }) {
     throw new Error('BOOKING_REPOSITORY.METHOD_NOT_IMPLEMENTED')
   }
+
+  async getBookingById(bookingId) {
+    throw new Error('BOOKING_REPOSITORY.METHOD_NOT_IMPLEMENTED')
+  }
+
+  async cancelBookingById(bookingId) {
+    throw new Error('BOOKING_REPOSITORY.METHOD_NOT_IMPLEMENTED')
+  }
 }
 
 export default BookingRepository

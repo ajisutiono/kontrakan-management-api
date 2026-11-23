@@ -8,13 +8,23 @@ describe('BookingRepository abstract methods', () => {
     repository = new BookingRepository()
   })
 
-  it('addBooking should throw METHOD_NOT_IMPLEMENTED', async() => {
+  it('addBooking should throw METHOD_NOT_IMPLEMENTED', async () => {
     await expect(repository.addBooking())
       .rejects.toThrowError('BOOKING_REPOSITORY.METHOD_NOT_IMPLEMENTED')
   })
 
-  it('getBookings should throw METHOD_NOT_IMPLEMENTED', async() => {
+  it('getBookings should throw METHOD_NOT_IMPLEMENTED', async () => {
     await expect(repository.getBookings({}))
+      .rejects.toThrowError('BOOKING_REPOSITORY.METHOD_NOT_IMPLEMENTED')
+  })
+
+  it('getBookingById should throw METHOD_NOT_IMPLEMENTED', async () => {
+    await expect(repository.getBookingById())
+      .rejects.toThrowError('BOOKING_REPOSITORY.METHOD_NOT_IMPLEMENTED')
+  })
+
+  it('cancelBookingById should throw METHOD_NOT_IMPLEMENTED', async () => {
+    await expect(repository.cancelBookingById({}))
       .rejects.toThrowError('BOOKING_REPOSITORY.METHOD_NOT_IMPLEMENTED')
   })
 })

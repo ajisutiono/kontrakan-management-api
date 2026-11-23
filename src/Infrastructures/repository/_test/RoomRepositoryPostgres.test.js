@@ -494,6 +494,23 @@ describe('RoomRepositoryPostgres', () => {
       expect(result).toHaveProperty('facilities', ['bed', 'bathroom'])
     })
 
+    // add opsional test
+    it('should return null facilities when room has no facilities', async () => {
+      const roomWithoutFacilitiesId = randomUUID()
+
+      await RoomsTableTestHelper.addRoom({
+        id: roomWithoutFacilitiesId,
+        owner_id: ownerId,
+        room_number: '99',
+      })
+
+      const repository = new RoomRepositoryPostgres({ pool })
+
+      const result = await repository.updateRoomById(roomWithoutFacilitiesId, { price: 500000 })
+
+      expect(result.facilities).toBeNull()
+    })
+
     /*   6. should return correct fields after update
          - assert: result mengandung id, owner_id, room_number, type, price, facilities, status, updated_at 
     */
